@@ -56,7 +56,7 @@
 - [x] 7.6 Verificar **CA6**: tocar una fruta cuenta de 1 a N (e2e con `__audioLog`)
 - [x] 7.7 Verificar **CA7**: con la voz silenciada no suena audio y el resto del comportamiento se mantiene (e2e)
 - [x] 7.8 Verificar **CA8**: cambiar de fruta sustituye todas sin alterar la cantidad (e2e)
-- [ ] 7.9 Verificar **CA9**: funcionamiento offline (e2e: precache en WebKit + recarga sin red en Chromium con perfil iPad, porque el WebKit de Playwright no permite recargar sin red; falta la prueba manual en iPad en modo avión)
-- [ ] 7.10 Verificar **CA10**: sin zoom por doble toque ni menú contextual (comprobación automática de estilos y metas + prueba manual en iPad real)
+- [x] 7.9 Verificar **CA9**: funcionamiento offline (e2e: precache en WebKit + recarga sin red en Chromium con perfil iPad, porque el WebKit de Playwright no permite recargar sin red; prueba manual en iPad en modo avión OK, verificada por el usuario el 2026-10-02)
+- [x] 7.10 Verificar **CA10**: sin zoom por doble toque ni menú contextual (comprobación automática de estilos y metas + prueba manual en iPad real OK, verificada por el usuario el 2026-10-02)
 - [x] 7.11 Verificar **CA11**: la pantalla inicial "¡A jugar!" da paso a la escena con 0 frutas y el audio habilitado (e2e)
-- [ ] 7.12 Cumplir la **Definition of Done** de design.md
+- [x] 7.12 Cumplir la **Definition of Done** de design.md

@@ -90,9 +90,9 @@ Resueltas:
 
 ## Definition of Done (técnica)
 
-- [ ] Tests automatizados cubren cada Criterio de Aceptación del proposal (CA9 y CA10 con verificación manual complementaria en iPad real)
-- [ ] Lint / formato / typecheck en verde (`svelte-check`, ESLint, Prettier)
-- [ ] `openspec validate --strict` sin errores
-- [ ] Documentación actualizada: README con desarrollo, tests, despliegue, cómo sustituir audios e instalación en iPad; comandos en `CLAUDE.md`
-- [ ] PR en GitHub enlazado al issue de Linear INN-12
-- [ ] Probado en un iPad real como PWA instalada (online y en modo avión)
+- [x] Tests automatizados cubren cada Criterio de Aceptación del proposal (CA9 y CA10 con verificación manual complementaria en iPad real)
+- [x] Lint / formato / typecheck en verde (`svelte-check`, ESLint, Prettier)
+- [x] `openspec validate --strict` sin errores
+- [x] Documentación actualizada: README con desarrollo, tests, despliegue, cómo sustituir audios e instalación en iPad; comandos en `CLAUDE.md`
+- [x] PR en GitHub enlazado al issue de Linear INN-12
+- [x] Probado en un iPad real como PWA instalada (online y en modo avión)
