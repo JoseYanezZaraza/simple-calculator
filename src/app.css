@@ -1,0 +1,67 @@
+:root {
+  --bg: #fff8e7;
+  --ink: #3d2c1e;
+  --wood: #c98b4f;
+  --wood-dark: #a86f3a;
+  --slot: #fffdf6;
+  --plus: #43aa5b;
+  --plus-dark: #2f8a45;
+  --minus: #f28c28;
+  --minus-dark: #cf6e12;
+  --highlight: #ffd23f;
+
+  font-family: ui-rounded, 'SF Pro Rounded', 'Arial Rounded MT Bold', system-ui, sans-serif;
+  color: var(--ink);
+  background: var(--bg);
+  color-scheme: light;
+}
+
+/* Sin gestos accidentales: ni zoom por doble toque, ni selección, ni menú, ni rebote (CA10). */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  position: fixed;
+  inset: 0;
+  margin: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
+  background: var(--bg);
+}
+
+#app {
+  position: fixed;
+  inset: 0;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
+    env(safe-area-inset-left);
+}
+
+img {
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  border: none;
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    transition-duration: 1ms !important;
+  }
+}
