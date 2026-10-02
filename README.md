@@ -1,0 +1,70 @@
+# Contar frutas
+
+Juego web para que una niña de 3 años explore la **suma y la resta de 0 a 10** manipulando frutas en un **marco de diez**. Está pensado para **iPad** y funciona sin conexión una vez instalado.
+
+- ➕ hace caer una fruta en el siguiente hueco y ➖ hace que la última se vaya rodando.
+- El número escrito grande y la voz acompañan cada cambio.
+- Al tocar una fruta, la voz cuenta de 1 a N.
+- Llegar a 10 tiene celebración. Con el marco vacío, ➖ responde con una frase amable. Nunca hay errores ni puntuaciones.
+- Hay controles discretos para el adulto (esquina superior derecha): silenciar la voz y elegir la fruta.
+
+Stack: Svelte 5 · Vite · TypeScript · vite-plugin-pwa · Vitest · Playwright (WebKit).
+Especificación y criterios de aceptación: `openspec/changes/add-free-play-ten-frame/` (Linear INN-12).
+
+## Desarrollo
+
+```bash
+npm install
+npm run dev          # http://localhost:5173
+```
+
+Para probarlo en el iPad dentro de la misma red: `npm run dev -- --host` y abre la IP que muestra Vite.
+Ten en cuenta que el service worker solo funciona con HTTPS o en `localhost`.
+
+| Comando                             | Qué hace                                                                                                       |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `npm test`                          | Tests unitarios (Vitest): núcleo, sesión y audio                                                               |
+| `npm run test:e2e`                  | Tests e2e en WebKit con perfiles de iPad vertical y apaisado (la primera vez: `npx playwright install webkit`) |
+| `npm run lint`                      | ESLint + Prettier (`npm run format` corrige el formato)                                                        |
+| `npm run check`                     | Typecheck con svelte-check y tsc                                                                               |
+| `npm run build` / `npm run preview` | Build de producción y servidor local del build                                                                 |
+| `npm run audio:tts`                 | Regenera los audios provisionales con la voz sintética de macOS                                                |
+| `npm run pwa:assets`                | Regenera los iconos de la PWA a partir de `public/icon.svg`                                                    |
+
+## Sustituir los audios por grabaciones propias
+
+Los audios viven en `public/audio/es/` con nombres fijos:
+
+| Archivo            | Qué dice                                                                                      |
+| ------------------ | --------------------------------------------------------------------------------------------- |
+| `0.m4a` … `10.m4a` | El número ("cero" … "diez")                                                                   |
+| `full.m4a`         | La frase al llenar el marco (p. ej. "¡Está lleno! ¡Muy bien!"); suena justo después de "diez" |
+| `empty.m4a`        | La frase amable al tocar ➖ sin frutas (p. ej. "No quedan frutas")                            |
+
+1. Graba cada frase (por ejemplo, con Notas de voz del iPhone), con poco silencio al principio y al final.
+2. Expórtala o conviértela a AAC `.m4a`. En macOS: `afconvert -f m4af -d aac -b 64000 grabacion.wav public/audio/es/3.m4a`.
+3. Reemplaza el archivo manteniendo el nombre y vuelve a hacer el build y el despliegue.
+
+No hay que cambiar código. Si una grabación dura más de lo previsto, el conteo espera a que termine antes de pasar al siguiente número.
+
+## Despliegue (GitHub Pages)
+
+El workflow `.github/workflows/ci.yml` ejecuta lint, typecheck y los tests unitarios y e2e en cada PR. En cada push a `main` despliega en GitHub Pages en `https://<usuario>.github.io/<repo>/`.
+
+Configuración inicial del repositorio, una sola vez: **Settings → Pages → Source: GitHub Actions**.
+
+Para construir con otra ruta base: `BASE_PATH=/mi-ruta/ npm run build`.
+
+## Instalación en el iPad
+
+1. Abre la URL de GitHub Pages en **Safari**.
+2. Pulsa **Compartir → Añadir a pantalla de inicio**.
+3. Abre la app desde el icono una vez con conexión, para que descargue imágenes y audios.
+4. Desde ese momento funciona **sin conexión**, también en modo avión.
+
+Para que la niña no pueda salir de la app, activa **Acceso Guiado**:
+
+1. En **Ajustes → Accesibilidad → Acceso Guiado**, actívalo y define un código.
+2. Abre la app y pulsa tres veces el botón lateral (o el botón de inicio) para iniciarlo.
+
+> iPadOS puede borrar la caché de una PWA que lleva semanas sin abrirse. Si pasa, basta con abrirla de nuevo con conexión.
