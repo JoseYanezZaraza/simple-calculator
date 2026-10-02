@@ -1,30 +1,50 @@
 import type { AudioPort } from '../audio/audioService'
 import { numberClip } from '../audio/manifest'
 import { add, MAX_COUNT, MIN_COUNT, remove, type FrameEvent } from '../core/tenFrame'
+import { countSteps, Narrator } from './narrator.svelte'
+import { Preferences, type Fruit } from './preferences.svelte'
 
-export const FRUITS = ['apple', 'banana', 'strawberry', 'orange'] as const
-export type Fruit = (typeof FRUITS)[number]
-
+export { FRUITS, type Fruit } from './preferences.svelte'
 /** Pausa mínima entre números al contar; se alarga si la grabación es más larga. */
-export const COUNT_STEP_MS = 750
-const COUNT_GAP_MS = 150
+export { STEP_MS as COUNT_STEP_MS } from './narrator.svelte'
+
+export interface SessionOptions {
+  /** Si llegar a 10 celebra y dice la frase de lleno (juego libre). En "Pon N" no. */
+  celebrateFull?: boolean
+}
 
 /**
- * Estado de una sesión de juego. La cantidad solo cambia a través del núcleo
+ * Estado del marco de diez. La cantidad solo cambia a través del núcleo
  * (src/core) y cada evento se traduce aquí en audio.
  */
 export class Session {
   count = $state(MIN_COUNT)
-  fruit = $state<Fruit>('apple')
-  voiceOn = $state(true)
   /** Se incrementa cada vez que se llega a 10; la UI lo usa como clave de la celebración. */
   celebration = $state(0)
+  readonly narrator: Narrator
+  private readonly celebrateFull: boolean
+
+  constructor(
+    private readonly audio: AudioPort,
+    readonly preferences: Preferences = new Preferences(audio),
+    { celebrateFull = true }: SessionOptions = {},
+  ) {
+    this.narrator = new Narrator(audio)
+    this.celebrateFull = celebrateFull
+  }
+
+  get fruit(): Fruit {
+    return this.preferences.fruit
+  }
+
+  get voiceOn(): boolean {
+    return this.preferences.voiceOn
+  }
+
   /** Índice base 0 de la fruta que se está nombrando al contar, o null. */
-  highlighted = $state<number | null>(null)
-
-  private countTimer: ReturnType<typeof setTimeout> | undefined
-
-  constructor(private readonly audio: AudioPort) {}
+  get highlighted(): number | null {
+    return this.narrator.highlighted
+  }
 
   get canAdd(): boolean {
     return this.count < MAX_COUNT
@@ -42,58 +62,45 @@ export class Session {
     this.apply(remove(this.count))
   }
 
+  /** Pone la cantidad sin locución (al preparar un reto). */
+  reset(count: number = MIN_COUNT): void {
+    this.narrator.cancel()
+    this.count = count
+  }
+
   /** Cuenta en voz alta de 1 a N resaltando cada fruta. */
   countAloud(): void {
-    this.cancelCounting()
-    if (this.count === MIN_COUNT) return
-    const total = this.count
-    const step = (i: number) => {
-      if (i >= total) {
-        this.highlighted = null
-        this.countTimer = undefined
-        return
-      }
-      this.highlighted = i
-      const clip = numberClip(i + 1)
-      this.audio.play(clip)
-      const duration = this.audio.durationOf(clip)
-      const wait = Math.max(COUNT_STEP_MS, duration ? duration * 1000 + COUNT_GAP_MS : 0)
-      this.countTimer = setTimeout(() => step(i + 1), wait)
-    }
-    step(0)
+    this.narrator.run(countSteps(this.count))
   }
 
   setVoice(on: boolean): void {
-    this.voiceOn = on
-    this.audio.setMuted(!on)
+    this.preferences.setVoice(on)
   }
 
   setFruit(fruit: Fruit): void {
-    this.fruit = fruit
+    this.preferences.setFruit(fruit)
   }
 
   private apply(result: { count: number; event: FrameEvent }): void {
     const { event } = result
     if (event.type === 'blockedFull') return
-    this.cancelCounting()
+    this.narrator.cancel()
     this.count = result.count
     switch (event.type) {
       case 'changed':
         this.audio.play(numberClip(event.count))
         break
       case 'reachedFull':
-        this.celebration++
-        this.audio.playSequence([numberClip(event.count), 'full'])
+        if (this.celebrateFull) {
+          this.celebration++
+          this.audio.playSequence([numberClip(event.count), 'full'])
+        } else {
+          this.audio.play(numberClip(event.count))
+        }
         break
       case 'blockedEmpty':
         this.audio.play('empty')
         break
     }
-  }
-
-  private cancelCounting(): void {
-    if (this.countTimer !== undefined) clearTimeout(this.countTimer)
-    this.countTimer = undefined
-    this.highlighted = null
   }
 }

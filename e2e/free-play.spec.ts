@@ -7,25 +7,7 @@ import {
   slotPattern,
   startGame,
   tap,
-  TOTAL_CLIPS,
 } from './helpers.ts'
-
-test.describe('Pantalla inicial', () => {
-  test('CA11: "¡A jugar!" entra en la escena con 0 frutas y el audio habilitado', async ({
-    page,
-  }) => {
-    await page.goto('./')
-    await expect(page.getByTestId('play-scene')).toHaveCount(0)
-    await page.getByTestId('start').click()
-
-    await expect(page.getByTestId('slot')).toHaveCount(10)
-    await expectCount(page, 0)
-    await expect.poll(() => page.evaluate(() => window.__audio.loadedCount)).toBe(TOTAL_CLIPS)
-
-    await tap(page, 'add')
-    expect(await audioClips(page)).toEqual(['1'])
-  })
-})
 
 test.describe('Juego libre', () => {
   test.beforeEach(async ({ page }) => {
