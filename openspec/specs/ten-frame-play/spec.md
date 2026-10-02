@@ -1,7 +1,8 @@
 # ten-frame-play Specification
 
 ## Purpose
-TBD - created by archiving change add-free-play-ten-frame. Update Purpose after archive.
+Escena de juego libre en la que una niña de 3 años suma y resta frutas de 0 a 10 en un marco de diez, con el número escrito, celebración al llenar el marco y selección de fruta por el adulto.
+
 ## Requirements
 ### Requirement: Pantalla inicial de juego
 La app SHALL arrancar en una pantalla "¡A jugar!" con un único botón grande, y al tocarlo MUST entrar en la escena de juego libre con 0 frutas. (CA11)

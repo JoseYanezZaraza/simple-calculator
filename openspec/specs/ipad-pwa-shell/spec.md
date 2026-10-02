@@ -1,7 +1,8 @@
 # ipad-pwa-shell Specification
 
 ## Purpose
-TBD - created by archiving change add-free-play-ten-frame. Update Purpose after archive.
+Envoltorio de la app para iPad: instalación como PWA a pantalla completa, funcionamiento sin conexión, supresión de gestos accidentales de Safari para iPadOS y tamaños táctiles aptos para una niña de 3 años.
+
 ## Requirements
 ### Requirement: Instalable como PWA en iPad
 La app SHALL incluir un manifiesto web y los iconos necesarios para instalarse desde "Añadir a pantalla de inicio" en Safari para iPadOS, y MUST abrirse a pantalla completa sin la interfaz del navegador.

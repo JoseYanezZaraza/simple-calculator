@@ -1,7 +1,8 @@
 # voice-feedback Specification
 
 ## Purpose
-TBD - created by archiving change add-free-play-ten-frame. Update Purpose after archive.
+Voz que acompaña el juego: desbloqueo de audio en iOS, locución del número en cada cambio, conteo en voz alta, frases amables en los límites, silencio controlado por el adulto y audios sustituibles por grabaciones propias.
+
 ## Requirements
 ### Requirement: Desbloqueo de audio con el primer toque
 El sistema SHALL inicializar y desbloquear el motor de audio dentro del gesto de toque del botón "¡A jugar!", para que todos los audios posteriores suenen en Safari para iPadOS sin más interacción. (CA11)
