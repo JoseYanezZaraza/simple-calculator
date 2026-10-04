@@ -1,73 +1,137 @@
 <script lang="ts">
   import apple from '../assets/fruits/apple.svg'
 
-  let { onstart }: { onstart: () => void } = $props()
+  let { onfree, onchallenges }: { onfree: () => void; onchallenges: () => void } = $props()
+
+  /** Mini marco de diez del botón "jugar libre": 3 manzanas. */
+  const miniFrame = Array.from({ length: 10 }, (_, i) => i < 3)
 </script>
 
 <main class="start">
-  <button class="play" data-testid="start" aria-label="¡A jugar!" onclick={onstart}>
-    <img src={apple} alt="" />
-    <span class="triangle" aria-hidden="true"></span>
-  </button>
-  <p class="title" aria-hidden="true">¡A jugar!</p>
+  <div class="choice">
+    <button class="mode free" data-testid="start-free" aria-label="Jugar libre" onclick={onfree}>
+      <span class="mini-frame" aria-hidden="true">
+        {#each miniFrame as filled, i (i)}
+          <span class="mini-slot">
+            {#if filled}<img src={apple} alt="" />{/if}
+          </span>
+        {/each}
+      </span>
+    </button>
+    <p class="label" aria-hidden="true">Jugar libre</p>
+  </div>
+
+  <div class="choice">
+    <button
+      class="mode challenges"
+      data-testid="start-challenges"
+      aria-label="Retos"
+      onclick={onchallenges}
+    >
+      <span class="question" aria-hidden="true">?</span>
+      <img class="badge" src={apple} alt="" />
+    </button>
+    <p class="label" aria-hidden="true">Retos</p>
+  </div>
 </main>
 
 <style>
   .start {
     isolation: isolate;
     height: 100%;
-    display: grid;
-    place-content: center;
-    justify-items: center;
-    gap: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: center;
+    gap: clamp(32px, 8vmin, 96px);
   }
 
-  .play {
+  .choice {
+    display: grid;
+    justify-items: center;
+    gap: 1.25rem;
+  }
+
+  .mode {
     position: relative;
-    width: clamp(200px, 40vmin, 340px);
+    display: grid;
+    place-items: center;
+    width: clamp(200px, 34vmin, 300px);
     aspect-ratio: 1;
     border-radius: 50%;
-    background: var(--plus);
-    box-shadow: 0 12px 0 var(--plus-dark);
   }
 
   /* El halo late; el botón queda quieto para que sea fácil de acertar. */
-  .play::before {
+  .mode::before {
     content: '';
     position: absolute;
     inset: -6%;
     border-radius: 50%;
-    background: var(--plus);
+    background: inherit;
     opacity: 0.25;
     z-index: -1;
     animation: breathe 2.4s ease-in-out infinite;
   }
 
-  .play:active {
-    transform: translateY(8px);
-    box-shadow: 0 4px 0 var(--plus-dark);
+  /* `top` y no `transform`: un transform crearía un contexto de apilamiento y el halo taparía el botón. */
+  .mode:active {
+    top: 8px;
   }
 
-  .play img {
+  .free {
+    background: var(--plus);
+    box-shadow: 0 12px 0 var(--plus-dark);
+  }
+
+  .challenges {
+    background: var(--confirm);
+    box-shadow: 0 12px 0 var(--confirm-dark);
+  }
+
+  .challenges::before {
+    animation-delay: 1.2s;
+  }
+
+  .mini-frame {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
+    width: 72%;
+    padding: 6px;
+    border-radius: 12px;
+    background: var(--wood);
+  }
+
+  .mini-slot {
+    aspect-ratio: 1;
+    border-radius: 6px;
+    background: var(--slot);
+  }
+
+  .mini-slot img {
+    width: 100%;
+    height: 100%;
+    padding: 8%;
+  }
+
+  .question {
+    color: #fff;
+    font-size: clamp(7rem, 20vmin, 11rem);
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .badge {
     position: absolute;
     width: 34%;
-    top: -12%;
+    top: -10%;
     right: -6%;
     transform: rotate(14deg);
   }
 
-  .triangle {
-    position: absolute;
-    left: 38%;
-    top: 28%;
-    border-style: solid;
-    border-width: clamp(44px, 9vmin, 76px) 0 clamp(44px, 9vmin, 76px) clamp(70px, 14vmin, 118px);
-    border-color: transparent transparent transparent #fff;
-  }
-
-  .title {
+  .label {
     margin: 0;
-    font-size: clamp(2.5rem, 8vmin, 5rem);
+    font-size: clamp(2rem, 6vmin, 3.5rem);
     font-weight: 800;
   }
 

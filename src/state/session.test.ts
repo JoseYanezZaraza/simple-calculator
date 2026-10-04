@@ -1,27 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import type { AudioPort } from '../audio/audioService'
-import type { ClipId } from '../audio/manifest'
+import { FakeAudio } from '../test/fakeAudio'
 import { COUNT_STEP_MS, Session } from './session.svelte'
-
-/** Doble de audio que registra lo que se pidió reproducir, respetando el silencio. */
-class FakeAudio implements AudioPort {
-  played: ClipId[][] = []
-  muted = false
-  durations: Partial<Record<ClipId, number>> = {}
-  play(clip: ClipId) {
-    this.playSequence([clip])
-  }
-  playSequence(clips: ClipId[]) {
-    if (!this.muted) this.played.push(clips)
-  }
-  stop() {}
-  setMuted(muted: boolean) {
-    this.muted = muted
-  }
-  durationOf(clip: ClipId) {
-    return this.durations[clip]
-  }
-}
 
 let audio: FakeAudio
 let session: Session

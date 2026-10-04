@@ -1,18 +1,45 @@
 import { expect, type Page } from '@playwright/test'
 
+type Challenge =
+  { kind: 'howMany'; target: number; options: number[] } | { kind: 'put'; target: number }
+
 declare global {
   interface Window {
     __audioLog: { clip: string; at: number }[]
     __audio: { loadedCount: number }
+    __challenges: { set: (challenge: Challenge) => void }
   }
 }
 
-export const TOTAL_CLIPS = 13
+/** 0–10, "full", "empty" y los 4 audios de los retos. */
+export const TOTAL_CLIPS = 17
 
+/** Entra en el juego libre desde la pantalla inicial. */
 export async function startGame(page: Page): Promise<void> {
   await page.goto('./')
-  await page.getByTestId('start').click()
+  await page.getByTestId('start-free').click()
   await expect(page.getByTestId('play-scene')).toBeVisible()
+}
+
+/** Entra en los retos y espera a que los audios estén cargados (la primera pregunta ya sonó). */
+export async function startChallenges(page: Page): Promise<void> {
+  await page.goto('./')
+  await page.getByTestId('start-challenges').click()
+  await expect(page.getByTestId('challenge-scene')).toBeVisible()
+  await expect.poll(() => page.evaluate(() => window.__audio.loadedCount)).toBe(TOTAL_CLIPS)
+}
+
+/** Fuerza el reto actual (solo en el build de e2e); el registro de audio queda con su pregunta. */
+export async function setChallenge(page: Page, challenge: Challenge): Promise<void> {
+  await clearAudio(page)
+  await page.evaluate((c) => window.__challenges.set(c), challenge)
+  const scene = page.getByTestId('challenge-scene')
+  await expect(scene).toHaveAttribute('data-kind', challenge.kind)
+  await expect(scene).toHaveAttribute('data-target', String(challenge.target))
+}
+
+export function option(page: Page, value: number) {
+  return page.getByTestId('option').filter({ hasText: new RegExp(`^${value}$`) })
 }
 
 /**

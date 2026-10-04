@@ -2,14 +2,35 @@
 
 Juego web para que una niña de 3 años explore la **suma y la resta de 0 a 10** manipulando frutas en un **marco de diez**. Está pensado para **iPad** y funciona sin conexión una vez instalado.
 
+La pantalla inicial ofrece dos modos: **jugar libre** y **retos**.
+
+### Jugar libre
+
 - ➕ hace caer una fruta en el siguiente hueco y ➖ hace que la última se vaya rodando.
 - El número escrito grande y la voz acompañan cada cambio.
 - Al tocar una fruta, la voz cuenta de 1 a N.
 - Llegar a 10 tiene celebración. Con el marco vacío, ➖ responde con una frase amable. Nunca hay errores ni puntuaciones.
-- Hay controles discretos para el adulto (esquina superior derecha): silenciar la voz y elegir la fruta.
+
+### Retos
+
+La app propone y la niña responde. Los retos se alternan al azar y nunca se repite el anterior:
+
+- **"¿Cuántas hay?"**: el marco muestra entre 1 y 10 frutas y la niña elige el número entre 3 opciones. Las opciones incorrectas están a 3 o menos de la respuesta.
+- **"Pon N frutas"**: la voz pide un número y la niña construye la cantidad con ➕/➖ y confirma con ✓.
+- Al acertar hay celebración, "¡Muy bien!" y, tras `SUCCESS_PAUSE_MS` (2 s, en `src/state/challengeSession.svelte.ts`), el siguiente reto.
+- Si la respuesta no es correcta no hay error: la voz dice "¡Vamos a contarlas!", cuenta las frutas resaltándolas y repite la pregunta.
+- El botón del altavoz repite la pregunta.
+
+### Controles del adulto
+
+Están en la esquina superior derecha, son discretos y funcionan en los dos modos:
+
+- volver al inicio;
+- silenciar la voz;
+- elegir la fruta.
 
 Stack: Svelte 5 · Vite · TypeScript · vite-plugin-pwa · Vitest · Playwright (WebKit).
-Especificación y criterios de aceptación: `openspec/changes/add-free-play-ten-frame/` (Linear INN-12).
+Especificación: `openspec/specs/` (capacidades vigentes) y `openspec/changes/` (cambios en curso y archivados; Linear INN-12, INN-13).
 
 ## Desarrollo
 
@@ -28,7 +49,7 @@ Ten en cuenta que el service worker solo funciona con HTTPS o en `localhost`.
 | `npm run lint`                      | ESLint + Prettier (`npm run format` corrige el formato)                                                        |
 | `npm run check`                     | Typecheck con svelte-check y tsc                                                                               |
 | `npm run build` / `npm run preview` | Build de producción y servidor local del build                                                                 |
-| `npm run audio:tts`                 | Regenera los audios provisionales con la voz sintética de macOS                                                |
+| `npm run audio:tts`                 | Genera con la voz sintética de macOS los audios que falten (`FORCE=1` los regenera todos y pisa grabaciones)   |
 | `npm run pwa:assets`                | Regenera los iconos de la PWA a partir de `public/icon.svg`                                                    |
 
 ## Sustituir los audios por grabaciones propias
@@ -40,6 +61,10 @@ Los audios viven en `public/audio/es/` con nombres fijos:
 | `0.m4a` … `10.m4a` | El número ("cero" … "diez")                                                                   |
 | `full.m4a`         | La frase al llenar el marco (p. ej. "¡Está lleno! ¡Muy bien!"); suena justo después de "diez" |
 | `empty.m4a`        | La frase amable al tocar ➖ sin frutas (p. ej. "No quedan frutas")                            |
+| `howMany.m4a`      | La pregunta del reto "¿Cuántas frutas hay?"                                                   |
+| `put.m4a`          | "Pon", que suena justo antes del número en el reto "Pon N frutas"                             |
+| `wellDone.m4a`     | "¡Muy bien!" al acertar un reto                                                               |
+| `letsCount.m4a`    | "¡Vamos a contarlas!" antes de contar juntos                                                  |
 
 1. Graba cada frase (por ejemplo, con Notas de voz del iPhone), con poco silencio al principio y al final.
 2. Expórtala o conviértela a AAC `.m4a`. En macOS: `afconvert -f m4af -d aac -b 64000 grabacion.wav public/audio/es/3.m4a`.
