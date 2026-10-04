@@ -49,5 +49,5 @@
 - [x] 7.8 Verificar **CA8**: el botón de repetir reproduce la pregunta actual (e2e)
 - [x] 7.9 Verificar **CA9**: "inicio" vuelve a la pantalla inicial desde ambos modos, conservando la fruta (e2e)
 - [x] 7.10 Verificar **CA10**: con la voz silenciada los retos funcionan sin audio, y se usa la fruta elegida (e2e + unit)
-- [ ] 7.11 Verificar **CA11**: los retos funcionan sin conexión (e2e Chromium + prueba manual en iPad en modo avión)
-- [ ] 7.12 Cumplir la **Definition of Done** de design.md
+- [x] 7.11 Verificar **CA11**: los retos funcionan sin conexión (e2e Chromium + prueba manual en iPad en modo avión OK, verificada por el usuario el 2026-10-04)
+- [x] 7.12 Cumplir la **Definition of Done** de design.md
