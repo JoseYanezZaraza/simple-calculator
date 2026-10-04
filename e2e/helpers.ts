@@ -8,6 +8,7 @@ declare global {
     __audioLog: { clip: string; at: number }[]
     __audio: { loadedCount: number }
     __challenges: { set: (challenge: Challenge) => void }
+    __celebrationLog?: number[]
   }
 }
 
@@ -98,4 +99,12 @@ export async function waitForServiceWorker(page: Page): Promise<void> {
       await new Promise((r) => navigator.serviceWorker.addEventListener('controllerchange', r))
     }
   })
+}
+
+/**
+ * Número de celebraciones mostradas desde que cargó la página. La celebración solo dura
+ * 1,8 s: comprobar el elemento visible falla en runners lentos, el registro no caduca.
+ */
+export async function celebrations(page: Page): Promise<number> {
+  return page.evaluate(() => window.__celebrationLog?.length ?? 0)
 }
