@@ -1,4 +1,4 @@
-> **Linear:** [INN-12](https://linear.app/inno8/issue/INN-12/incremento-1-juego-libre-con-marco-de-diez-sumar-y-restar-0-10) · Proyecto [P-INN-2](https://linear.app/inno8/project/calculadora-interactiva-infantil-952da72f318f) · **Estado:** Draft
+> **Linear:** [INN-12](https://linear.app/inno8/issue/INN-12/incremento-1-juego-libre-con-marco-de-diez-sumar-y-restar-0-10) · Proyecto [P-INN-2](https://linear.app/inno8/project/calculadora-interactiva-infantil-952da72f318f) · **Estado:** Implementado (PR #1)
 
 ## Why
 
@@ -36,14 +36,14 @@ Una niña de 3 años aún no lee ni maneja símbolos (`+`, `=`), pero sí entien
 
 ## Criterios de Aceptación
 
-- [ ] **CA1:** Al tocar ➕ con N < 10 frutas, el marco muestra N+1 frutas, el número muestra N+1 y suena su audio.
-- [ ] **CA2:** Al tocar ➖ con N > 0 frutas, el marco muestra N−1 frutas, el número muestra N−1 y suena su audio.
-- [ ] **CA3:** Con 10 frutas, ➕ está desactivado y se muestra una celebración cada vez que se pasa de 9 a 10.
-- [ ] **CA4:** Con 0 frutas, ➖ está desactivado y, si se toca, suena un mensaje amable sin cambiar la cantidad.
-- [ ] **CA5:** Las frutas ocupan siempre los huecos en orden: fila superior de izquierda a derecha y después la inferior.
-- [ ] **CA6:** Al tocar una fruta, se cuenta en voz alta de 1 a N.
-- [ ] **CA7:** Con la voz silenciada no suena ningún audio y el resto del comportamiento no cambia.
-- [ ] **CA8:** Cambiar de fruta sustituye todas las frutas visibles por la nueva sin alterar la cantidad.
-- [ ] **CA9:** Instalada como PWA, la app carga y funciona con el iPad en modo avión.
-- [ ] **CA10:** En Safari para iPadOS, el doble toque no hace zoom y la pulsación larga no abre el menú contextual.
-- [ ] **CA11:** La app arranca en una pantalla "¡A jugar!" y, tras tocarla, entra en la escena con 0 frutas y el audio habilitado.
+- [x] **CA1:** Al tocar ➕ con N < 10 frutas, el marco muestra N+1 frutas, el número muestra N+1 y suena su audio.
+- [x] **CA2:** Al tocar ➖ con N > 0 frutas, el marco muestra N−1 frutas, el número muestra N−1 y suena su audio.
+- [x] **CA3:** Con 10 frutas, ➕ está desactivado y se muestra una celebración cada vez que se pasa de 9 a 10.
+- [x] **CA4:** Con 0 frutas, ➖ está desactivado y, si se toca, suena un mensaje amable sin cambiar la cantidad.
+- [x] **CA5:** Las frutas ocupan siempre los huecos en orden: fila superior de izquierda a derecha y después la inferior.
+- [x] **CA6:** Al tocar una fruta, se cuenta en voz alta de 1 a N.
+- [x] **CA7:** Con la voz silenciada no suena ningún audio y el resto del comportamiento no cambia.
+- [x] **CA8:** Cambiar de fruta sustituye todas las frutas visibles por la nueva sin alterar la cantidad.
+- [x] **CA9:** Instalada como PWA, la app carga y funciona con el iPad en modo avión.
+- [x] **CA10:** En Safari para iPadOS, el doble toque no hace zoom y la pulsación larga no abre el menú contextual.
+- [x] **CA11:** La app arranca en una pantalla "¡A jugar!" y, tras tocarla, entra en la escena con 0 frutas y el audio habilitado.
