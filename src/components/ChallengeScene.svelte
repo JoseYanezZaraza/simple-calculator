@@ -9,7 +9,11 @@
   import SceneLayout from './SceneLayout.svelte'
   import TenFrame from './TenFrame.svelte'
 
-  let { game, onhome }: { game: ChallengeSession; onhome: () => void } = $props()
+  let {
+    game,
+    onhome,
+    showFruitPicker = true,
+  }: { game: ChallengeSession; onhome: () => void; showFruitPicker?: boolean } = $props()
 
   const challenge = $derived(game.challenge)
   /** En "Pon N" se ve N siempre; en "¿Cuántas hay?" solo al acertar, como refuerzo. */
@@ -27,7 +31,7 @@
   data-phase={game.phase}
 >
   {#snippet controls()}
-    <AdultControls preferences={game.preferences} {onhome} />
+    <AdultControls preferences={game.preferences} {onhome} {showFruitPicker} />
   {/snippet}
 
   {#snippet frame()}

@@ -1,6 +1,9 @@
 import { expect, test } from '@playwright/test'
 import {
+  adventureWorld,
   audioClips,
+  levelNode,
+  setProgress,
   expectCount,
   startChallenges,
   startGame,
@@ -49,4 +52,27 @@ test('CA11 (retos): el modo retos funciona sin conexión con sus audios', async 
   await page.getByTestId('repeat').click()
   const question = kind === 'howMany' ? ['howMany'] : ['put', target]
   await expect.poll(() => audioClips(page)).toEqual([...question, ...question])
+})
+
+test('CA12 (mundos): la aventura funciona sin conexión con el progreso guardado', async ({
+  page,
+  context,
+}) => {
+  await page.goto('./')
+  await setProgress(page, { apple: 10, banana: 3 })
+  await waitForServiceWorker(page)
+
+  await context.setOffline(true)
+  await page.reload()
+  await page.getByTestId('start-adventure').click()
+  const states = await page
+    .getByTestId('adventure-world')
+    .evaluateAll((els) => els.map((e) => e.getAttribute('data-state')))
+  expect(states).toEqual(['done', 'next', 'locked', 'locked'])
+
+  await adventureWorld(page, 'banana').click()
+  await expect(page.getByTestId('world-theme')).toHaveAttribute('data-world', 'banana')
+  await levelNode(page, 4).click()
+  await expect.poll(() => page.evaluate(() => window.__audio.loadedCount)).toBe(TOTAL_CLIPS)
+  await expect.poll(async () => (await audioClips(page)).length).toBeGreaterThan(0)
 })

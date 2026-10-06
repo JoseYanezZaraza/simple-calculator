@@ -3,19 +3,24 @@ import { expect, type Page } from '@playwright/test'
 type Challenge =
   { kind: 'howMany'; target: number; options: number[] } | { kind: 'put'; target: number }
 
+export type WorldId = 'apple' | 'banana' | 'strawberry' | 'orange'
+export type Progress = Record<WorldId, number>
+export const NO_PROGRESS: Progress = { apple: 0, banana: 0, strawberry: 0, orange: 0 }
+
 declare global {
   interface Window {
     __audioLog: { clip: string; at: number }[]
     __audio: { loadedCount: number }
     __challenges: { set: (challenge: Challenge) => void }
-    __celebrationLog?: number[]
+    __progress: { set: (p: Progress) => void; get: () => Progress }
+    __celebrationLog?: { kind: 'level' | 'world' | 'adventure'; at: number }[]
     __highlightLog?: number[]
     __optionHighlightLog?: number[]
   }
 }
 
-/** 0–10, "full", "empty" y los 4 audios de los retos. */
-export const TOTAL_CLIPS = 17
+/** 0–10, "full", "empty", los 4 audios de los retos y los 2 de mundos/aventura. */
+export const TOTAL_CLIPS = 19
 
 /** Entra en el juego libre desde la pantalla inicial. */
 export async function startGame(page: Page): Promise<void> {
@@ -24,12 +29,44 @@ export async function startGame(page: Page): Promise<void> {
   await expect(page.getByTestId('play-scene')).toBeVisible()
 }
 
-/** Entra en los retos y espera a que los audios estén cargados (la primera pregunta ya sonó). */
+/**
+ * Entra en un reto: "Mundos" → mundo naranja (rango 1–10) → nivel 1. Espera a que los audios
+ * estén cargados y a que haya sonado la primera pregunta (se hace tras la carga).
+ */
 export async function startChallenges(page: Page): Promise<void> {
   await page.goto('./')
-  await page.getByTestId('start-challenges').click()
+  await page.getByTestId('start-worlds').click()
+  await worldButton(page, 'orange').click()
+  await levelNode(page, 1).click()
   await expect(page.getByTestId('challenge-scene')).toBeVisible()
   await expect.poll(() => page.evaluate(() => window.__audio.loadedCount)).toBe(TOTAL_CLIPS)
+  await expect.poll(async () => (await audioClips(page)).length).toBeGreaterThan(0)
+}
+
+/** Siembra el progreso guardado (antes de entrar a "Mundos" o "Aventura"). */
+export async function setProgress(page: Page, progress: Partial<Progress>): Promise<void> {
+  await page.evaluate((p) => window.__progress.set(p), { ...NO_PROGRESS, ...progress })
+}
+
+export async function getProgress(page: Page): Promise<Progress> {
+  return page.evaluate(() => window.__progress.get())
+}
+
+export function worldButton(page: Page, world: WorldId) {
+  return page.locator(`[data-testid="world"][data-world="${world}"]`)
+}
+
+export function adventureWorld(page: Page, world: WorldId) {
+  return page.locator(`[data-testid="adventure-world"][data-world="${world}"]`)
+}
+
+export function levelNode(page: Page, level: number) {
+  return page.locator(`[data-testid="level-node"][data-level="${level}"]`)
+}
+
+/** Tipos de celebración mostrados, en orden. */
+export async function celebrationKinds(page: Page): Promise<string[]> {
+  return page.evaluate(() => (window.__celebrationLog ?? []).map((c) => c.kind))
 }
 
 /** Fuerza el reto actual (solo en el build de e2e); el registro de audio queda con su pregunta. */

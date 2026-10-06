@@ -11,6 +11,8 @@ export { STEP_MS as COUNT_STEP_MS } from './narrator.svelte'
 export interface SessionOptions {
   /** Si llegar a 10 celebra y dice la frase de lleno (juego libre). En "Pon N" no. */
   celebrateFull?: boolean
+  /** Fruta fija (la del mundo). Sin ella se usa la elegida por el adulto. */
+  fruit?: Fruit
 }
 
 /**
@@ -23,18 +25,20 @@ export class Session {
   celebration = $state(0)
   readonly narrator: Narrator
   private readonly celebrateFull: boolean
+  private readonly fixedFruit: Fruit | undefined
 
   constructor(
     private readonly audio: AudioPort,
     readonly preferences: Preferences = new Preferences(audio),
-    { celebrateFull = true }: SessionOptions = {},
+    { celebrateFull = true, fruit }: SessionOptions = {},
   ) {
     this.narrator = new Narrator(audio)
     this.celebrateFull = celebrateFull
+    this.fixedFruit = fruit
   }
 
   get fruit(): Fruit {
-    return this.preferences.fruit
+    return this.fixedFruit ?? this.preferences.fruit
   }
 
   get voiceOn(): boolean {
