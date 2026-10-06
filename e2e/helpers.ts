@@ -13,14 +13,16 @@ declare global {
     __audio: { loadedCount: number }
     __challenges: { set: (challenge: Challenge) => void }
     __progress: { set: (p: Progress) => void; get: () => Progress }
+    __avatar: { set: (fruit: WorldId) => void; get: () => WorldId | null }
+    __hopLog?: { from: string; to: string; animated: boolean }[]
     __celebrationLog?: { kind: 'level' | 'world' | 'adventure'; at: number }[]
     __highlightLog?: number[]
     __optionHighlightLog?: number[]
   }
 }
 
-/** 0–10, "full", "empty", los 4 audios de los retos y los 2 de mundos/aventura. */
-export const TOTAL_CLIPS = 19
+/** 0–10, "full", "empty", 4 de los retos, 2 de mundos/aventura y la pregunta del avatar. */
+export const TOTAL_CLIPS = 20
 
 /** Entra en el juego libre desde la pantalla inicial. */
 export async function startGame(page: Page): Promise<void> {
@@ -35,6 +37,7 @@ export async function startGame(page: Page): Promise<void> {
  */
 export async function startChallenges(page: Page): Promise<void> {
   await page.goto('./')
+  await setAvatar(page, 'apple')
   await page.getByTestId('start-worlds').click()
   await worldButton(page, 'orange').click()
   await levelNode(page, 1).click()
@@ -170,4 +173,14 @@ export async function highlights(page: Page): Promise<number[]> {
 /** Opciones resaltadas al tocar su altavoz, en orden, desde que cargó la página. */
 export async function optionHighlights(page: Page): Promise<number[]> {
   return page.evaluate(() => window.__optionHighlightLog ?? [])
+}
+
+/** Siembra el avatar elegido (si no, "Mundos"/"Aventura" piden elegirlo primero). */
+export async function setAvatar(page: Page, fruit: WorldId): Promise<void> {
+  await page.evaluate((f) => window.__avatar.set(f), fruit)
+}
+
+/** Saltos del avatar registrados en el build de e2e. */
+export async function hops(page: Page): Promise<{ from: string; to: string; animated: boolean }[]> {
+  return page.evaluate(() => window.__hopLog ?? [])
 }

@@ -32,13 +32,16 @@ export class ProgressStore {
     this.progress = this.load()
   }
 
-  /** Completa `level` si es el siguiente. Devuelve si con ello se completó el mundo. */
-  complete(world: WorldId, level: number): { worldCompleted: boolean } {
+  /**
+   * Completa `level` si es el siguiente. Indica si hubo avance (repetir un nivel completado
+   * no avanza) y si con ello se completó el mundo.
+   */
+  complete(world: WorldId, level: number): { advanced: boolean; worldCompleted: boolean } {
     const before = this.progress
     const after = completeLevel(before, world, level)
-    if (after === before) return { worldCompleted: false }
+    if (after === before) return { advanced: false, worldCompleted: false }
     this.set(after)
-    return { worldCompleted: isWorldComplete(after, world) }
+    return { advanced: true, worldCompleted: isWorldComplete(after, world) }
   }
 
   reset(): void {
