@@ -206,3 +206,63 @@ describe('transición y controles', () => {
     expect(g.frame.fruit).toBe('strawberry')
   })
 })
+
+describe('escuchar el número de una opción', () => {
+  it('dice el número de la opción y la resalta mientras suena (CA2)', () => {
+    howMany(6, [4, 6, 8])
+    game.sayOption(8)
+    expect(audio.played).toEqual([['8']])
+    expect(game.spokenOption).toBe(8)
+    vi.advanceTimersByTime(STEP_MS)
+    expect(game.spokenOption).toBeNull()
+  })
+
+  it('no cuenta como respuesta: el reto sigue y se puede acertar después (CA3)', () => {
+    howMany(6, [4, 6, 8])
+    game.sayOption(8)
+    game.sayOption(6)
+    vi.advanceTimersByTime(STEP_MS * 5)
+    expect(game.celebration).toBe(0)
+    expect(game.phase).toBe('asking')
+    expect(audio.played).toEqual([['8'], ['6']])
+    expect(game.challenge).toEqual({ kind: 'howMany', target: 6, options: [4, 6, 8] })
+    game.choose(6)
+    expect(game.celebration).toBe(1)
+  })
+
+  it('cancela el conteo de "contar juntos" en curso (CA2)', () => {
+    howMany(6, [4, 6, 8])
+    game.choose(8)
+    vi.advanceTimersByTime(STEP_MS + STEP_MS / 2) // ya sonó "uno"
+    game.sayOption(4)
+    vi.advanceTimersByTime(STEP_MS * 10)
+    expect(audio.played).toEqual([['letsCount'], ['1'], ['4']])
+    expect(game.highlighted).toBeNull()
+  })
+
+  it('con la voz silenciada resalta igual sin sonar (CA4)', () => {
+    game.preferences.setVoice(false)
+    howMany(3, [2, 3, 4])
+    game.sayOption(3)
+    expect(game.spokenOption).toBe(3)
+    vi.advanceTimersByTime(STEP_MS - 1)
+    expect(game.spokenOption).toBe(3)
+    vi.advanceTimersByTime(1)
+    expect(game.spokenOption).toBeNull()
+    expect(audio.played).toEqual([])
+  })
+
+  it('durante la celebración no tiene efecto (CA5)', () => {
+    howMany(3, [2, 3, 5])
+    game.choose(3)
+    game.sayOption(5)
+    expect(audio.played).toEqual([['wellDone']])
+    expect(game.spokenOption).toBeNull()
+  })
+
+  it('no hace nada en "Pon N frutas"', () => {
+    put(4)
+    game.sayOption(4)
+    expect(audio.played).toEqual([])
+  })
+})

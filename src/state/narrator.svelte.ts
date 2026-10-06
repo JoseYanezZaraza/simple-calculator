@@ -10,6 +10,8 @@ export interface NarrationStep {
   clips?: ClipId[]
   /** Índice base 0 de la fruta que se resalta durante el paso. */
   highlight?: number
+  /** Opción de respuesta ("¿Cuántas hay?") que se resalta durante el paso. */
+  option?: number
 }
 
 /** Pasos para contar en voz alta de 1 a `total` resaltando cada fruta. */
@@ -24,6 +26,8 @@ export function countSteps(total: number): NarrationStep[] {
 export class Narrator {
   /** Índice base 0 de la fruta resaltada, o null. */
   highlighted = $state<number | null>(null)
+  /** Opción de respuesta resaltada, o null. */
+  option = $state<number | null>(null)
 
   private timer: ReturnType<typeof setTimeout> | undefined
 
@@ -37,13 +41,14 @@ export class Narrator {
     this.cancel()
     const play = (i: number) => {
       if (i >= steps.length) {
-        this.highlighted = null
+        this.clearMarks()
         this.timer = undefined
         onDone?.()
         return
       }
-      const { clips = [], highlight } = steps[i]
+      const { clips = [], highlight, option } = steps[i]
       this.highlighted = highlight ?? null
+      this.option = option ?? null
       if (clips.length) this.audio.playSequence(clips)
       this.timer = setTimeout(() => play(i + 1), this.stepDuration(clips))
     }
@@ -53,7 +58,12 @@ export class Narrator {
   cancel(): void {
     if (this.timer !== undefined) clearTimeout(this.timer)
     this.timer = undefined
+    this.clearMarks()
+  }
+
+  private clearMarks(): void {
     this.highlighted = null
+    this.option = null
   }
 
   private stepDuration(clips: ClipId[]): number {

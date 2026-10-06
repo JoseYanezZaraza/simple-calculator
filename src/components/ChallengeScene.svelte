@@ -4,7 +4,8 @@
   import AdultControls from './AdultControls.svelte'
   import Celebration from './Celebration.svelte'
   import NumberDisplay from './NumberDisplay.svelte'
-  import RepeatButton from './RepeatButton.svelte'
+  import SpeakerButton from './SpeakerButton.svelte'
+  import { recordOptionHighlight } from '../testHooks'
   import SceneLayout from './SceneLayout.svelte'
   import TenFrame from './TenFrame.svelte'
 
@@ -13,6 +14,10 @@
   const challenge = $derived(game.challenge)
   /** En "Pon N" se ve N siempre; en "¿Cuántas hay?" solo al acertar, como refuerzo. */
   const showTarget = $derived(challenge.kind === 'put' || game.phase === 'celebrating')
+
+  $effect(() => {
+    if (game.spokenOption !== null) recordOptionHighlight(game.spokenOption)
+  })
 </script>
 
 <SceneLayout
@@ -38,20 +43,30 @@
     {#if showTarget}
       <NumberDisplay count={challenge.target} />
     {/if}
-    <RepeatButton onclick={() => game.ask()} />
+    <SpeakerButton label="Repetir la pregunta" testid="repeat" onclick={() => game.ask()} />
   {/snippet}
 
   {#snippet actions()}
     {#if challenge.kind === 'howMany'}
       {#each challenge.options as option (option)}
-        <ActionButton
-          variant="option"
-          label={String(option)}
-          testid="option"
-          onclick={() => game.choose(option)}
-        >
-          {option}
-        </ActionButton>
+        <!-- El altavoz va debajo y separado: un toque impreciso no debe responder. -->
+        <div class="option-column">
+          <ActionButton
+            variant="option"
+            label={String(option)}
+            testid="option"
+            highlighted={game.spokenOption === option}
+            onclick={() => game.choose(option)}
+          >
+            {option}
+          </ActionButton>
+          <SpeakerButton
+            label="Escuchar el {option}"
+            testid="option-audio"
+            size="small"
+            onclick={() => game.sayOption(option)}
+          />
+        </div>
       {/each}
     {:else}
       <ActionButton
@@ -85,3 +100,12 @@
 
   <Celebration id={game.celebration} fruit={game.frame.fruit} />
 </SceneLayout>
+
+<style>
+  .option-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+</style>
