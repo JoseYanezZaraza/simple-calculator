@@ -22,4 +22,4 @@
 - [x] 4.3 Verificar **CA3**: no cuenta como respuesta y el reto sigue igual (e2e + unit)
 - [x] 4.4 Verificar **CA4**: con la voz silenciada no suena y resalta igual (e2e + unit)
 - [x] 4.5 Verificar **CA5**: durante la celebración no tiene efecto (unit + e2e)
-- [ ] 4.6 Cumplir la **Definition of Done** de design.md
+- [x] 4.6 Cumplir la **Definition of Done** de design.md

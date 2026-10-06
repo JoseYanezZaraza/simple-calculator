@@ -1,4 +1,4 @@
-> **Linear:** [INN-14](https://linear.app/inno8/issue/INN-14/retos-boton-de-audio-para-escuchar-el-numero-de-cada-opcion) · Proyecto [P-INN-2](https://linear.app/inno8/project/calculadora-interactiva-infantil-952da72f318f) · **Estado:** Draft
+> **Linear:** [INN-14](https://linear.app/inno8/issue/INN-14/retos-boton-de-audio-para-escuchar-el-numero-de-cada-opcion) · Proyecto [P-INN-2](https://linear.app/inno8/project/calculadora-interactiva-infantil-952da72f318f) · **Estado:** Implementado (PR #5)
 
 ## Why
 
@@ -33,8 +33,8 @@ En el reto "¿Cuántas hay?" la niña elige entre tres números escritos que aú
 
 ## Criterios de Aceptación
 
-- [ ] **CA1:** En "¿Cuántas hay?", cada opción tiene su propio botón de audio de al menos 72×72 px que no se solapa con la opción, con al menos 16 px de separación.
-- [ ] **CA2:** Tocar el botón de audio de una opción reproduce el número de esa opción y la resalta mientras suena. Si había una narración en curso, se cancela.
-- [ ] **CA3:** Tocar un botón de audio no cuenta como respuesta: no hay celebración ni "¡Vamos a contarlas!", el reto sigue igual y se puede responder después.
-- [ ] **CA4:** Con la voz silenciada, el botón de audio no reproduce nada, pero la opción se resalta igual.
-- [ ] **CA5:** Durante la celebración de un acierto, tocar un botón de audio no hace nada.
+- [x] **CA1:** En "¿Cuántas hay?", cada opción tiene su propio botón de audio de al menos 72×72 px que no se solapa con la opción, con al menos 16 px de separación.
+- [x] **CA2:** Tocar el botón de audio de una opción reproduce el número de esa opción y la resalta mientras suena. Si había una narración en curso, se cancela.
+- [x] **CA3:** Tocar un botón de audio no cuenta como respuesta: no hay celebración ni "¡Vamos a contarlas!", el reto sigue igual y se puede responder después.
+- [x] **CA4:** Con la voz silenciada, el botón de audio no reproduce nada, pero la opción se resalta igual.
+- [x] **CA5:** Durante la celebración de un acierto, tocar un botón de audio no hace nada.

@@ -49,10 +49,10 @@ La fila de acciones de "¿Cuántas hay?" pasa a ser 3 columnas de opción más a
 
 ## Definition of Done (técnica)
 
-- [ ] Tests automatizados cubren cada Criterio de Aceptación del proposal
-- [ ] Los tests existentes siguen pasando
-- [ ] Lint / formato / typecheck en verde (`svelte-check`, ESLint, Prettier)
-- [ ] `openspec validate --strict` sin errores
-- [ ] Documentación actualizada: README (retos)
-- [ ] PR en GitHub enlazado al issue de Linear INN-14
-- [ ] Probado en un iPad real
+- [x] Tests automatizados cubren cada Criterio de Aceptación del proposal
+- [x] Los tests existentes siguen pasando
+- [x] Lint / formato / typecheck en verde (`svelte-check`, ESLint, Prettier)
+- [x] `openspec validate --strict` sin errores
+- [x] Documentación actualizada: README (retos)
+- [x] PR en GitHub enlazado al issue de Linear INN-14
+- [x] Probado en un iPad real (verificado por el usuario el 2026-10-06)
