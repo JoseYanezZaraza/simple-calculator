@@ -10,6 +10,7 @@ declare global {
     __challenges: { set: (challenge: Challenge) => void }
     __celebrationLog?: number[]
     __highlightLog?: number[]
+    __optionHighlightLog?: number[]
   }
 }
 
@@ -127,4 +128,9 @@ export async function expectWellDone(page: Page): Promise<void> {
  */
 export async function highlights(page: Page): Promise<number[]> {
   return page.evaluate(() => window.__highlightLog ?? [])
+}
+
+/** Opciones resaltadas al tocar su altavoz, en orden, desde que cargó la página. */
+export async function optionHighlights(page: Page): Promise<number[]> {
+  return page.evaluate(() => window.__optionHighlightLog ?? [])
 }

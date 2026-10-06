@@ -10,6 +10,7 @@
     label,
     testid,
     disabled = false,
+    highlighted = false,
     onclick,
     children,
   }: {
@@ -17,6 +18,8 @@
     label: string
     testid: string
     disabled?: boolean
+    /** Anillo amarillo mientras suena su número; igual en todas las opciones, no da pistas. */
+    highlighted?: boolean
     onclick: () => void
     children: Snippet
   } = $props()
@@ -24,7 +27,9 @@
 
 <button
   class="big {variant}"
+  class:highlighted
   data-testid={testid}
+  data-highlighted={highlighted}
   aria-label={label}
   aria-disabled={disabled}
   {onclick}
@@ -73,6 +78,12 @@
       0 10px 0 var(--wood),
       inset 0 0 0 6px var(--wood);
     font-variant-numeric: tabular-nums;
+  }
+
+  .big.highlighted {
+    outline: 10px solid var(--highlight);
+    outline-offset: 4px;
+    transform: scale(1.06);
   }
 
   .big:active {

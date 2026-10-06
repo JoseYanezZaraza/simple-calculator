@@ -1,8 +1,19 @@
 <script lang="ts">
-  let { onclick }: { onclick: () => void } = $props()
+  /** Botón de altavoz: "repetir la pregunta" (grande) o escuchar una opción (pequeño). */
+  let {
+    label,
+    testid,
+    size = 'large',
+    onclick,
+  }: {
+    label: string
+    testid: string
+    size?: 'large' | 'small'
+    onclick: () => void
+  } = $props()
 </script>
 
-<button class="repeat" data-testid="repeat" aria-label="Repetir la pregunta" {onclick}>
+<button class="speaker {size}" data-testid={testid} aria-label={label} {onclick}>
   <svg viewBox="0 0 24 24" aria-hidden="true">
     <path d="M4 9v6h4l5 4V5L8 9z" fill="currentColor" />
     <path
@@ -16,8 +27,7 @@
 </button>
 
 <style>
-  .repeat {
-    --size: clamp(88px, 13vmin, 120px);
+  .speaker {
     flex: none;
     width: var(--size);
     height: var(--size);
@@ -29,7 +39,16 @@
     transition: transform 80ms ease;
   }
 
-  .repeat:active {
+  .large {
+    --size: clamp(88px, 13vmin, 120px);
+  }
+
+  .small {
+    --size: 80px;
+    box-shadow: 0 6px 0 var(--wood-dark);
+  }
+
+  .speaker:active {
     transform: translateY(6px);
     box-shadow: 0 2px 0 var(--wood-dark);
   }

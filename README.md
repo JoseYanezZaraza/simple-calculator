@@ -16,6 +16,7 @@ La pantalla inicial ofrece dos modos: **jugar libre** y **retos**.
 La app propone y la niña responde. Los retos se alternan al azar y nunca se repite el anterior:
 
 - **"¿Cuántas hay?"**: el marco muestra entre 1 y 10 frutas y la niña elige el número entre 3 opciones. Las opciones incorrectas están a 3 o menos de la respuesta.
+  Bajo cada número hay un altavoz que dice cómo se llama ("seis"). Escucharlo no cuenta como respuesta: sirve para oír las opciones antes de elegir.
 - **"Pon N frutas"**: la voz pide un número y la niña construye la cantidad con ➕/➖ y confirma con ✓.
 - Al acertar hay celebración, "¡Muy bien!" y, tras `SUCCESS_PAUSE_MS` (2 s, en `src/state/challengeSession.svelte.ts`), el siguiente reto.
 - Si la respuesta no es correcta no hay error: la voz dice "¡Vamos a contarlas!", cuenta las frutas resaltándolas y repite la pregunta.

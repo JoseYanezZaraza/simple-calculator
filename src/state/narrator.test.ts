@@ -64,4 +64,16 @@ describe('Narrator', () => {
     expect(narrator.highlighted).toBe(1)
     expect(audio.played).toEqual([])
   })
+
+  it('resalta la opción del paso y la limpia al terminar o cancelar', () => {
+    narrator.run([{ clips: ['8'], option: 8 }])
+    expect(narrator.option).toBe(8)
+    expect(narrator.highlighted).toBeNull()
+    vi.advanceTimersByTime(STEP_MS)
+    expect(narrator.option).toBeNull()
+
+    narrator.run([{ clips: ['4'], option: 4 }])
+    narrator.cancel()
+    expect(narrator.option).toBeNull()
+  })
 })

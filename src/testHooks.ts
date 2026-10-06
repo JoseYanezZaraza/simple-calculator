@@ -15,3 +15,10 @@ export function recordHighlight(index: number): void {
   const w = window as unknown as { __highlightLog?: number[] }
   ;(w.__highlightLog ??= []).push(index)
 }
+
+/** Cada opción de respuesta resaltada mientras suena su número. */
+export function recordOptionHighlight(option: number): void {
+  if (import.meta.env.MODE !== 'e2e') return
+  const w = window as unknown as { __optionHighlightLog?: number[] }
+  ;(w.__optionHighlightLog ??= []).push(option)
+}

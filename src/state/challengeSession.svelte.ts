@@ -41,6 +41,11 @@ export class ChallengeSession {
     return this.frame.highlighted
   }
 
+  /** Opción resaltada mientras suena su número, o null. */
+  get spokenOption(): number | null {
+    return this.frame.narrator.option
+  }
+
   get accepting(): boolean {
     return this.phase === 'asking'
   }
@@ -76,6 +81,15 @@ export class ChallengeSession {
   choose(option: number): void {
     if (!this.accepting || this.challenge.kind !== 'howMany') return
     this.evaluate(option)
+  }
+
+  /**
+   * "¿Cuántas hay?": dice el número de una opción y la resalta. No es una respuesta:
+   * el reto sigue igual. Cancela la narración en curso, como cualquier otro toque.
+   */
+  sayOption(option: number): void {
+    if (!this.accepting || this.challenge.kind !== 'howMany') return
+    this.frame.narrator.run([{ clips: [numberClip(option)], option }])
   }
 
   /** "Pon N": la niña confirma con ✓. */

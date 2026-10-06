@@ -5,6 +5,7 @@ import {
   clearAudio,
   expectWellDone,
   highlights,
+  optionHighlights,
   expectCount,
   filledSlots,
   option,
@@ -222,3 +223,82 @@ test('CA9: "inicio" desde el juego libre vacía el marco al volver y conserva la
 async function expectCountSlots(page: Page, n: number) {
   await expect(filledSlots(page)).toHaveCount(n)
 }
+
+test.describe('Escuchar el número de una opción', () => {
+  test.beforeEach(async ({ page }) => {
+    await startChallenges(page)
+    await setChallenge(page, { kind: 'howMany', target: 6, options: [4, 6, 8] })
+    await clearAudio(page)
+  })
+
+  const speaker = (page: Page, index: number) => page.getByTestId('option-audio').nth(index)
+
+  test('CA1: cada opción tiene su altavoz de ≥72 px separado ≥16 px', async ({ page }) => {
+    await expect(page.getByTestId('option-audio')).toHaveCount(3)
+    for (let i = 0; i < 3; i++) {
+      const o = (await page.getByTestId('option').nth(i).boundingBox())!
+      const a = (await speaker(page, i).boundingBox())!
+      expect(a.width).toBeGreaterThanOrEqual(72)
+      expect(a.height).toBeGreaterThanOrEqual(72)
+      expect(a.y - (o.y + o.height)).toBeGreaterThanOrEqual(16)
+    }
+  })
+
+  test('CA2: el altavoz dice el número de su opción y la resalta', async ({ page }) => {
+    await speaker(page, 2).click()
+    expect(await audioClips(page)).toEqual(['8'])
+    await expect.poll(() => optionHighlights(page)).toEqual([8])
+    // Al terminar el paso deja de estar resaltada.
+    await expect(page.getByTestId('option').nth(2)).toHaveAttribute('data-highlighted', 'false', {
+      timeout: 3000,
+    })
+  })
+
+  test('CA2: el altavoz interrumpe el "contar juntos"', async ({ page }) => {
+    await option(page, 8).click()
+    await expect.poll(() => audioClips(page)).toContain('1')
+    await speaker(page, 0).click()
+    await page.waitForTimeout(2000)
+    const clips = await audioClips(page)
+    expect(clips.at(-1)).toBe('4')
+    expect(clips).not.toContain('howMany')
+  })
+
+  test('CA3: escuchar no es responder; después se puede acertar', async ({ page }) => {
+    await speaker(page, 2).click()
+    await speaker(page, 1).click()
+    expect(await audioClips(page)).toEqual(['8', '6'])
+    expect(await celebrations(page)).toBe(0)
+    await expect(page.getByTestId('option')).toHaveText(['4', '6', '8'])
+    const scene = page.getByTestId('challenge-scene')
+    await expect(scene).toHaveAttribute('data-target', '6')
+    await expect(scene).toHaveAttribute('data-phase', 'asking')
+
+    await option(page, 6).click()
+    await expect.poll(() => celebrations(page)).toBe(1)
+  })
+
+  test('CA4: con la voz silenciada no suena pero resalta', async ({ page }) => {
+    await page.getByTestId('voice-toggle').click()
+    await speaker(page, 1).click()
+    await expect(page.getByTestId('option').nth(1)).toHaveAttribute('data-highlighted', 'false', {
+      timeout: 3000,
+    })
+    expect(await audioClips(page)).toEqual([])
+    expect(await optionHighlights(page)).toContain(6)
+  })
+
+  test('CA5: durante la celebración el altavoz no hace nada', async ({ page }) => {
+    // Los dos toques en el mismo instante: un runner lento no puede dejar acabar la celebración.
+    await page.evaluate(() => {
+      const options = document.querySelectorAll<HTMLElement>('[data-testid="option"]')
+      const speakers = document.querySelectorAll<HTMLElement>('[data-testid="option-audio"]')
+      options[1].click()
+      speakers[0].click()
+    })
+    expect(await optionHighlights(page)).toEqual([])
+    const clips = await audioClips(page)
+    expect(clips[0]).toBe('wellDone')
+    expect(clips).not.toContain('4')
+  })
+})
