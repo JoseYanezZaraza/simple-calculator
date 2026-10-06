@@ -5,7 +5,8 @@
   import WorldsRoot from './components/worlds/WorldsRoot.svelte'
   import type { Challenge } from './core/challenges'
   import type { Progress } from './core/worlds'
-  import { Preferences } from './state/preferences.svelte'
+  import { AvatarStore } from './state/avatar.svelte'
+  import { Preferences, type Fruit } from './state/preferences.svelte'
   import { ProgressStore } from './state/progress.svelte'
   import { Session } from './state/session.svelte'
   import { WorldsController, type WorldsOrigin } from './state/worldsController.svelte'
@@ -15,6 +16,7 @@
   const audio = new AudioService()
   const preferences = new Preferences(audio)
   const progress = new ProgressStore()
+  const avatar = new AvatarStore()
   let mode = $state<Mode>('home')
   let session = $state.raw<Session | undefined>()
   let worlds = $state.raw<WorldsController | undefined>()
@@ -25,6 +27,8 @@
       __audio: audio,
       // Fuerza el reto del nivel en curso para escenarios deterministas.
       __challenges: { set: (challenge: Challenge) => worlds?.game?.set(challenge) },
+      // Siembra el avatar elegido.
+      __avatar: { set: (fruit: Fruit) => avatar.set(fruit), get: () => avatar.avatar },
       // Siembra o lee el progreso guardado.
       __progress: {
         set: (p: Progress) => progress.set(p),
@@ -42,7 +46,7 @@
 
   function enterWorlds(origin: WorldsOrigin) {
     const audioReady = audio.unlock()
-    worlds = new WorldsController(audio, preferences, progress, origin, { audioReady })
+    worlds = new WorldsController(audio, preferences, progress, origin, { avatar, audioReady })
     mode = 'worlds'
   }
 

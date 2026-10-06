@@ -9,13 +9,48 @@
     type Progress,
     type WorldId,
   } from '../../core/worlds'
+  import type { Fruit } from '../../state/preferences.svelte'
+  import Avatar, { type AvatarSpot } from './Avatar.svelte'
 
   /** "Aventura": los 4 mundos en camino; solo se abren en orden. */
   let {
     progress,
     unlocking,
+    avatar,
+    hopFrom,
     onopen,
-  }: { progress: Progress; unlocking?: WorldId; onopen: (world: WorldId) => void } = $props()
+  }: {
+    progress: Progress
+    unlocking?: WorldId
+    avatar: Fruit | null
+    /** Mundo recién completado desde el que salta el avatar al desbloqueado. */
+    hopFrom?: WorldId
+    onopen: (world: WorldId) => void
+  } = $props()
+
+  /** Mismas posiciones que las clases .n0–.n3 (en %). */
+  const LANDSCAPE: [number, number][] = [
+    [12, 50],
+    [37, 50],
+    [62, 50],
+    [87, 50],
+  ]
+  const PORTRAIT: [number, number][] = [
+    [30, 12],
+    [70, 37],
+    [30, 62],
+    [70, 87],
+  ]
+
+  function spot(world: WorldId): AvatarSpot {
+    const i = WORLD_IDS.indexOf(world)
+    return { id: world, landscape: LANDSCAPE[i], portrait: PORTRAIT[i] }
+  }
+
+  /** Mundo actual: el primero sin completar, o el último si la aventura está completa. */
+  const avatarWorld = $derived(
+    WORLD_IDS.find((w) => !isWorldComplete(progress, w)) ?? WORLD_IDS[WORLD_IDS.length - 1],
+  )
 
   function stateOf(world: WorldId): 'done' | 'next' | 'locked' {
     if (isWorldComplete(progress, world)) return 'done'
@@ -51,6 +86,15 @@
   {/each}
   {#if isAdventureComplete(progress)}
     <span class="trophy" aria-hidden="true">🏆</span>
+  {/if}
+  {#if avatar}
+    <Avatar
+      fruit={avatar}
+      at={spot(avatarWorld)}
+      from={hopFrom ? spot(hopFrom) : undefined}
+      size="clamp(110px, 14vmin, 140px)"
+      lift="clamp(60px, 7.6vmin, 76px)"
+    />
   {/if}
 </div>
 

@@ -3,6 +3,7 @@ import {
   adventureWorld,
   audioClips,
   levelNode,
+  setAvatar,
   setProgress,
   expectCount,
   startChallenges,
@@ -59,6 +60,7 @@ test('CA12 (mundos): la aventura funciona sin conexión con el progreso guardado
   context,
 }) => {
   await page.goto('./')
+  await setAvatar(page, 'banana')
   await setProgress(page, { apple: 10, banana: 3 })
   await waitForServiceWorker(page)
 
@@ -75,4 +77,22 @@ test('CA12 (mundos): la aventura funciona sin conexión con el progreso guardado
   await levelNode(page, 4).click()
   await expect.poll(() => page.evaluate(() => window.__audio.loadedCount)).toBe(TOTAL_CLIPS)
   await expect.poll(async () => (await audioClips(page)).length).toBeGreaterThan(0)
+})
+
+test('CA9 (avatar): se elige y aparece en la aventura sin conexión', async ({ page, context }) => {
+  await page.goto('./')
+  await waitForServiceWorker(page)
+
+  await context.setOffline(true)
+  await page.reload()
+  await page.getByTestId('start-adventure').click()
+  await expect(page.getByTestId('avatar-option')).toHaveCount(4)
+  const loaded = await page
+    .locator('[data-testid="avatar-option"] img')
+    .evaluateAll((imgs) => imgs.every((img) => (img as HTMLImageElement).naturalWidth > 0))
+  expect(loaded).toBe(true)
+  await expect.poll(() => audioClips(page)).toEqual(['chooseAvatar'])
+
+  await page.locator('[data-testid="avatar-option"][data-avatar="orange"]').click()
+  await expect(page.getByTestId('avatar')).toHaveAttribute('data-avatar', 'orange')
 })

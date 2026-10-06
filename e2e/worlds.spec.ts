@@ -8,6 +8,7 @@ import {
   levelNode,
   option,
   setChallenge,
+  setAvatar,
   setProgress,
   tap,
   TOTAL_CLIPS,
@@ -21,6 +22,7 @@ const WORLD_FLOW_TIMEOUT = 15_000
 
 async function openHome(page: Page, progress: Partial<Progress> = {}) {
   await page.goto('./')
+  await setAvatar(page, 'apple')
   await setProgress(page, progress)
 }
 
@@ -238,6 +240,7 @@ test.describe('Progreso', () => {
     page,
   }) => {
     await page.goto('./')
+    await setAvatar(page, 'apple')
     await page.evaluate(() => localStorage.setItem('contar-frutas:progress:v1', '{roto'))
     const errors: string[] = []
     page.on('pageerror', (e) => errors.push(e.message))

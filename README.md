@@ -32,6 +32,14 @@ Los retos se organizan en **4 mundos**, uno por fruta, con **10 niveles** cada u
   - Al terminar la naranja, se celebra la aventura completa.
 - Completar un mundo o la aventura tiene una celebración especial con audio propio.
 
+**Avatar:** la primera vez que se entra en "Mundos" o "Aventura", la niña elige su personaje ("¿Quién te acompaña?"): una manzana, un plátano, una fresa o una naranja cartoon.
+
+- El avatar está de pie sobre el nivel siguiente del mapa y sobre el mundo actual de la aventura.
+- **Salta** al siguiente nivel o mundo cuando avanza.
+- Se cambia con el botón redondo de abajo a la izquierda, en el selector y en la aventura.
+- Se guarda en el iPad (`contar-frutas:avatar:v1`), aparte del progreso: reiniciar el progreso no lo borra.
+- Con "Reducir movimiento" activado en iPadOS, cambia de sitio sin saltar.
+
 Cada nivel es un reto:
 
 - **"¿Cuántas hay?"**: el marco muestra entre 1 y el máximo del mundo frutas, y la niña elige el número entre 3 opciones. Las opciones incorrectas están a 3 o menos de la respuesta; en el mundo manzana siempre son 1, 2 y 3.
@@ -55,7 +63,7 @@ Están en la esquina superior derecha y son discretos:
 - **Reiniciar el progreso** (↺): en "Mundos" y "Aventura". Pide confirmación con texto.
 
 Stack: Svelte 5 · Vite · TypeScript · vite-plugin-pwa · Vitest · Playwright (WebKit).
-Especificación: `openspec/specs/` (capacidades vigentes) y `openspec/changes/` (cambios en curso y archivados; Linear INN-12 a INN-15).
+Especificación: `openspec/specs/` (capacidades vigentes) y `openspec/changes/` (cambios en curso y archivados; Linear INN-12 a INN-16).
 
 ## Desarrollo
 
@@ -92,6 +100,7 @@ Los audios viven en `public/audio/es/` con nombres fijos:
 | `letsCount.m4a`     | "¡Vamos a contarlas!" antes de contar juntos                                                  |
 | `worldDone.m4a`     | "¡Completaste el mundo!" al completar los 10 niveles de un mundo                              |
 | `adventureDone.m4a` | "¡Completaste la aventura!" al terminar el último mundo de la aventura                        |
+| `chooseAvatar.m4a`  | "¿Quién te acompaña?" al elegir el personaje                                                  |
 
 1. Graba cada frase (por ejemplo, con Notas de voz del iPhone), con poco silencio al principio y al final.
 2. Expórtala o conviértela a AAC `.m4a`. En macOS: `afconvert -f m4af -d aac -b 64000 grabacion.wav public/audio/es/3.m4a`.
