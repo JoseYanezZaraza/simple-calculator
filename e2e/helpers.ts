@@ -8,6 +8,8 @@ declare global {
     __audioLog: { clip: string; at: number }[]
     __audio: { loadedCount: number }
     __challenges: { set: (challenge: Challenge) => void }
+    __celebrationLog?: number[]
+    __highlightLog?: number[]
   }
 }
 
@@ -98,4 +100,31 @@ export async function waitForServiceWorker(page: Page): Promise<void> {
       await new Promise((r) => navigator.serviceWorker.addEventListener('controllerchange', r))
     }
   })
+}
+
+/**
+ * Número de celebraciones mostradas desde que cargó la página. La celebración solo dura
+ * 1,8 s: comprobar el elemento visible falla en runners lentos, el registro no caduca.
+ */
+export async function celebrations(page: Page): Promise<number> {
+  return page.evaluate(() => window.__celebrationLog?.length ?? 0)
+}
+
+/**
+ * Tras un acierto debe sonar primero "¡Muy bien!" y nunca "¡Vamos a contarlas!". No se exige
+ * que no suene nada más: pasados 2 s ya empieza el reto siguiente con su pregunta, y en un
+ * runner lento la lectura del registro puede llegar después.
+ */
+export async function expectWellDone(page: Page): Promise<void> {
+  const clips = await audioClips(page)
+  expect(clips[0]).toBe('wellDone')
+  expect(clips).not.toContain('letsCount')
+}
+
+/**
+ * Frutas resaltadas al contar (índices base 0, en orden) desde que cargó la página. Cada
+ * resaltado dura ~750 ms: el registro evita depender de verlo a tiempo en un runner lento.
+ */
+export async function highlights(page: Page): Promise<number[]> {
+  return page.evaluate(() => window.__highlightLog ?? [])
 }

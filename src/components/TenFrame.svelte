@@ -4,6 +4,7 @@
   import { FRUIT_IMAGES, FRUIT_LABELS } from '../assets/fruits'
   import { filledSlots } from '../core/tenFrame'
   import type { Fruit } from '../state/session.svelte'
+  import { recordHighlight } from '../testHooks'
 
   let {
     count,
@@ -18,6 +19,10 @@
   } = $props()
 
   const slots = $derived(filledSlots(count))
+
+  $effect(() => {
+    if (highlighted !== null) recordHighlight(highlighted)
+  })
 
   /** La fruta cae desde arriba y rebota en su hueco. */
   function drop(_node: Element): TransitionConfig {

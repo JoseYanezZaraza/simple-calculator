@@ -1,6 +1,7 @@
 <script lang="ts">
   import { FRUIT_IMAGES } from '../assets/fruits'
   import type { Fruit } from '../state/session.svelte'
+  import { recordCelebration } from '../testHooks'
 
   /** `id` cambia cada vez que se llega a 10; 0 significa que aún no ha habido celebración. */
   let { id, fruit }: { id: number; fruit: Fruit } = $props()
@@ -20,7 +21,12 @@
 
 {#if visible}
   {#key id}
-    <div class="celebration" data-testid="celebration" aria-hidden="true">
+    <div
+      class="celebration"
+      data-testid="celebration"
+      aria-hidden="true"
+      {@attach recordCelebration}
+    >
       <span class="star">⭐</span>
       {#each { length: PIECES }, i (i)}
         <img

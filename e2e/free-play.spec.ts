@@ -1,6 +1,8 @@
 import { expect, test } from '@playwright/test'
 import {
   audioClips,
+  celebrations,
+  highlights,
   expectCount,
   filledSlots,
   setCount,
@@ -35,7 +37,7 @@ test.describe('Juego libre', () => {
     await setCount(page, 9)
     await tap(page, 'add')
     await expectCount(page, 10)
-    await expect(page.getByTestId('celebration')).toBeVisible()
+    await expect.poll(() => celebrations(page)).toBe(1)
     await expect(page.getByTestId('add')).toHaveAttribute('aria-disabled', 'true')
     expect(await audioClips(page)).toEqual(['10', 'full'])
 
@@ -46,10 +48,10 @@ test.describe('Juego libre', () => {
 
   test('CA3: la celebración se repite cada vez que se vuelve a llegar a 10', async ({ page }) => {
     await setCount(page, 10)
-    await expect(page.getByTestId('celebration')).toBeHidden({ timeout: 4000 })
+    await expect.poll(() => celebrations(page)).toBe(1)
     await tap(page, 'remove')
     await tap(page, 'add')
-    await expect(page.getByTestId('celebration')).toBeVisible()
+    await expect.poll(() => celebrations(page)).toBe(2)
   })
 
   test('CA4: con 0 frutas ➖ está desactivado y suena la frase amable sin errores', async ({
@@ -76,7 +78,7 @@ test.describe('Juego libre', () => {
   test('CA6: tocar una fruta cuenta de 1 a N resaltando cada una', async ({ page }) => {
     await setCount(page, 4)
     await filledSlots(page).nth(1).getByRole('button').click()
-    await expect(page.locator('[data-testid="slot"][data-highlighted="true"]')).toHaveCount(1)
+    await expect.poll(() => highlights(page), { timeout: 6000 }).toEqual([0, 1, 2, 3])
     await expect.poll(() => audioClips(page), { timeout: 6000 }).toEqual(['1', '2', '3', '4'])
     await expect(page.locator('[data-highlighted="true"]')).toHaveCount(0, { timeout: 3000 })
   })
@@ -87,9 +89,10 @@ test.describe('Juego libre', () => {
 
     await tap(page, 'add', 10)
     await expectCount(page, 10)
-    await expect(page.getByTestId('celebration')).toBeVisible()
+    await expect.poll(() => celebrations(page)).toBe(1)
     await filledSlots(page).first().getByRole('button').click()
-    await expect(page.locator('[data-testid="slot"][data-highlighted="true"]')).toHaveCount(1)
+    // Con la voz silenciada el conteo resalta igual: basta con ver empezar el resaltado.
+    await expect.poll(() => highlights(page)).toContain(0)
     await tap(page, 'remove', 11)
     await expectCount(page, 0)
 

@@ -106,10 +106,10 @@ Se añaden al `manifest.ts` y a `scripts/generate-tts.sh`, y el precache los inc
 
 ## Definition of Done (técnica)
 
-- [ ] Tests automatizados cubren cada Criterio de Aceptación del proposal (CA11 con verificación manual complementaria en iPad real)
-- [ ] Los tests del incremento 1 siguen pasando (solo cambia la entrada por "jugar libre")
-- [ ] Lint / formato / typecheck en verde (`svelte-check`, ESLint, Prettier)
-- [ ] `openspec validate --strict` sin errores
-- [ ] Documentación actualizada: README (modo retos, audios nuevos)
-- [ ] PR en GitHub enlazado al issue de Linear INN-13
-- [ ] Probado en un iPad real como PWA instalada (retos online y en modo avión)
+- [x] Tests automatizados cubren cada Criterio de Aceptación del proposal (CA11 con verificación manual complementaria en iPad real)
+- [x] Los tests del incremento 1 siguen pasando (solo cambia la entrada por "jugar libre")
+- [x] Lint / formato / typecheck en verde (`svelte-check`, ESLint, Prettier)
+- [x] `openspec validate --strict` sin errores
+- [x] Documentación actualizada: README (modo retos, audios nuevos)
+- [x] PR en GitHub enlazado al issue de Linear INN-13
+- [x] Probado en un iPad real como PWA instalada (retos online y en modo avión)

@@ -1,7 +1,10 @@
 import { expect, test, type Page } from '@playwright/test'
 import {
   audioClips,
+  celebrations,
   clearAudio,
+  expectWellDone,
+  highlights,
   expectCount,
   filledSlots,
   option,
@@ -80,11 +83,11 @@ test.describe('Retos', () => {
     await clearAudio(page)
     await option(page, 3).click()
     const scene = page.getByTestId('challenge-scene')
-    await expect(page.getByTestId('celebration')).toBeVisible()
-    await expect(scene).toHaveAttribute('data-phase', 'celebrating')
-    expect(await audioClips(page)).toEqual(['wellDone'])
+    await expect.poll(() => celebrations(page)).toBe(1)
+    await expectWellDone(page)
 
-    await expect(scene).toHaveAttribute('data-phase', 'asking', { timeout: 3000 })
+    // La pausa exacta (SUCCESS_PAUSE_MS) se verifica en los tests unitarios.
+    await expect(scene).toHaveAttribute('data-phase', 'asking', { timeout: 5000 })
     const next = `${await scene.getAttribute('data-kind')}:${await scene.getAttribute('data-target')}`
     expect(next).not.toBe('howMany:3')
   })
@@ -96,7 +99,7 @@ test.describe('Retos', () => {
     await clearAudio(page)
     await option(page, 8).click()
 
-    await expect(highlightedSlots(page)).toHaveCount(1)
+    await expect.poll(() => highlights(page), { timeout: 10_000 }).toEqual([0, 1, 2, 3, 4, 5])
     await expect
       .poll(() => audioClips(page), { timeout: 10_000 })
       .toEqual(['letsCount', '1', '2', '3', '4', '5', '6', 'howMany'])
@@ -104,7 +107,7 @@ test.describe('Retos', () => {
     await expect(page.getByTestId('option')).toHaveText(['4', '6', '8'])
     await expectCountSlots(page, 6)
     await expect(page.getByTestId('challenge-scene')).toHaveAttribute('data-phase', 'asking')
-    await expect(page.getByTestId('celebration')).toHaveCount(0)
+    expect(await celebrations(page)).toBe(0)
     await expect(page.getByRole('alert')).toHaveCount(0)
   })
 
@@ -128,7 +131,7 @@ test.describe('Retos', () => {
     await tap(page, 'add')
     await expectCountSlots(page, 10)
     expect(await audioClips(page)).toEqual(['10'])
-    await expect(page.getByTestId('celebration')).toHaveCount(0)
+    expect(await celebrations(page)).toBe(0)
   })
 
   test('CA6: ✓ con N frutas es acierto', async ({ page }) => {
@@ -136,8 +139,8 @@ test.describe('Retos', () => {
     await tap(page, 'add', 5)
     await clearAudio(page)
     await page.getByTestId('confirm').click()
-    await expect(page.getByTestId('celebration')).toBeVisible()
-    expect(await audioClips(page)).toEqual(['wellDone'])
+    await expect.poll(() => celebrations(page)).toBe(1)
+    await expectWellDone(page)
   })
 
   test('CA6: ✓ con otra cantidad cuenta, repite y no vacía el marco', async ({ page }) => {
@@ -157,7 +160,7 @@ test.describe('Retos', () => {
     const scene = page.getByTestId('challenge-scene')
     let previous = await solve(page)
     for (let i = 0; i < 3; i++) {
-      await expect(scene).toHaveAttribute('data-phase', 'asking', { timeout: 3000 })
+      await expect(scene).toHaveAttribute('data-phase', 'asking', { timeout: 5000 })
       const current = await solve(page)
       expect(current).not.toBe(previous)
       previous = current
@@ -182,12 +185,12 @@ test.describe('Retos', () => {
     await page.getByTestId('voice-toggle').click()
     await setChallenge(page, { kind: 'howMany', target: 3, options: [2, 3, 4] })
     await option(page, 2).click()
-    await expect(highlightedSlots(page)).toHaveCount(1)
+    await expect.poll(() => highlights(page), { timeout: 10_000 }).toEqual([0, 1, 2])
     await expect(highlightedSlots(page)).toHaveCount(0, { timeout: 6000 })
     await option(page, 3).click()
-    await expect(page.getByTestId('celebration')).toBeVisible()
+    await expect.poll(() => celebrations(page)).toBe(1)
     await expect(page.getByTestId('challenge-scene')).toHaveAttribute('data-phase', 'asking', {
-      timeout: 3000,
+      timeout: 5000,
     })
     expect(await audioClips(page)).toEqual([])
   })

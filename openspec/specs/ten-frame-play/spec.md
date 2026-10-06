@@ -2,16 +2,25 @@
 
 ## Purpose
 Escena de juego libre en la que una niña de 3 años suma y resta frutas de 0 a 10 en un marco de diez, con el número escrito, celebración al llenar el marco y selección de fruta por el adulto.
-
 ## Requirements
 ### Requirement: Pantalla inicial de juego
-La app SHALL arrancar en una pantalla "¡A jugar!" con un único botón grande, y al tocarlo MUST entrar en la escena de juego libre con 0 frutas. (CA11)
+La app SHALL arrancar en una pantalla inicial con dos botones grandes con dibujo y etiqueta: "jugar libre" y "retos". Al tocar "jugar libre" MUST entrar en la escena de juego libre con 0 frutas y, al tocar "retos", MUST entrar en el modo retos. Ambos botones SHALL tener al menos 160×160 px CSS en un iPad. (CA1 de add-count-challenges; sustituye a CA11 de add-free-play-ten-frame)
 
-#### Scenario: Entrar al juego desde la pantalla inicial
+#### Scenario: Entrar al juego libre desde la pantalla inicial
 - **GIVEN** la app acaba de abrirse
-- **WHEN** la niña toca el botón "¡A jugar!"
+- **WHEN** la niña toca el botón "jugar libre"
 - **THEN** se muestra la escena de juego con el marco de diez vacío
 - **AND** el número escrito muestra "0"
+
+#### Scenario: Entrar en los retos desde la pantalla inicial
+- **GIVEN** la app acaba de abrirse
+- **WHEN** la niña toca el botón "retos"
+- **THEN** se muestra el primer reto
+
+#### Scenario: Tamaño de los botones de la pantalla inicial
+- **GIVEN** la pantalla inicial se muestra en un iPad en cualquier orientación
+- **WHEN** se miden los botones "jugar libre" y "retos"
+- **THEN** cada uno mide al menos 160×160 px CSS
 
 ### Requirement: Marco de diez con rango 0–10
 La escena SHALL mostrar un marco de diez de 2 filas × 5 huecos y una cantidad de frutas entre 0 y 10, ambos incluidos. La cantidad MUST ser la única fuente de verdad para el marco, el número escrito y el audio.
