@@ -8,3 +8,10 @@ export function recordCelebration(): void {
   const w = window as unknown as { __celebrationLog?: number[] }
   ;(w.__celebrationLog ??= []).push(Date.now())
 }
+
+/** Índice (base 0) de cada fruta resaltada al contar, en orden. */
+export function recordHighlight(index: number): void {
+  if (import.meta.env.MODE !== 'e2e') return
+  const w = window as unknown as { __highlightLog?: number[] }
+  ;(w.__highlightLog ??= []).push(index)
+}

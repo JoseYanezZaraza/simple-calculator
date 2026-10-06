@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test'
 import {
   audioClips,
   celebrations,
+  highlights,
   expectCount,
   filledSlots,
   setCount,
@@ -77,7 +78,7 @@ test.describe('Juego libre', () => {
   test('CA6: tocar una fruta cuenta de 1 a N resaltando cada una', async ({ page }) => {
     await setCount(page, 4)
     await filledSlots(page).nth(1).getByRole('button').click()
-    await expect(page.locator('[data-testid="slot"][data-highlighted="true"]')).toHaveCount(1)
+    await expect.poll(() => highlights(page), { timeout: 6000 }).toEqual([0, 1, 2, 3])
     await expect.poll(() => audioClips(page), { timeout: 6000 }).toEqual(['1', '2', '3', '4'])
     await expect(page.locator('[data-highlighted="true"]')).toHaveCount(0, { timeout: 3000 })
   })
@@ -90,7 +91,8 @@ test.describe('Juego libre', () => {
     await expectCount(page, 10)
     await expect.poll(() => celebrations(page)).toBe(1)
     await filledSlots(page).first().getByRole('button').click()
-    await expect(page.locator('[data-testid="slot"][data-highlighted="true"]')).toHaveCount(1)
+    // Con la voz silenciada el conteo resalta igual: basta con ver empezar el resaltado.
+    await expect.poll(() => highlights(page)).toContain(0)
     await tap(page, 'remove', 11)
     await expectCount(page, 0)
 

@@ -3,6 +3,8 @@ import {
   audioClips,
   celebrations,
   clearAudio,
+  expectWellDone,
+  highlights,
   expectCount,
   filledSlots,
   option,
@@ -82,7 +84,7 @@ test.describe('Retos', () => {
     await option(page, 3).click()
     const scene = page.getByTestId('challenge-scene')
     await expect.poll(() => celebrations(page)).toBe(1)
-    expect(await audioClips(page)).toEqual(['wellDone'])
+    await expectWellDone(page)
 
     // La pausa exacta (SUCCESS_PAUSE_MS) se verifica en los tests unitarios.
     await expect(scene).toHaveAttribute('data-phase', 'asking', { timeout: 5000 })
@@ -97,7 +99,7 @@ test.describe('Retos', () => {
     await clearAudio(page)
     await option(page, 8).click()
 
-    await expect(highlightedSlots(page)).toHaveCount(1)
+    await expect.poll(() => highlights(page), { timeout: 10_000 }).toEqual([0, 1, 2, 3, 4, 5])
     await expect
       .poll(() => audioClips(page), { timeout: 10_000 })
       .toEqual(['letsCount', '1', '2', '3', '4', '5', '6', 'howMany'])
@@ -138,7 +140,7 @@ test.describe('Retos', () => {
     await clearAudio(page)
     await page.getByTestId('confirm').click()
     await expect.poll(() => celebrations(page)).toBe(1)
-    expect(await audioClips(page)).toEqual(['wellDone'])
+    await expectWellDone(page)
   })
 
   test('CA6: ✓ con otra cantidad cuenta, repite y no vacía el marco', async ({ page }) => {
@@ -183,7 +185,7 @@ test.describe('Retos', () => {
     await page.getByTestId('voice-toggle').click()
     await setChallenge(page, { kind: 'howMany', target: 3, options: [2, 3, 4] })
     await option(page, 2).click()
-    await expect(highlightedSlots(page)).toHaveCount(1)
+    await expect.poll(() => highlights(page), { timeout: 10_000 }).toEqual([0, 1, 2])
     await expect(highlightedSlots(page)).toHaveCount(0, { timeout: 6000 })
     await option(page, 3).click()
     await expect.poll(() => celebrations(page)).toBe(1)
