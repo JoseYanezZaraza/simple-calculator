@@ -2,7 +2,7 @@
 
 Juego web para que una niña de 3 años explore la **suma y la resta de 0 a 10** manipulando frutas en un **marco de diez**. Está pensado para **iPad** y funciona sin conexión una vez instalado.
 
-La pantalla inicial ofrece dos modos: **jugar libre** y **retos**.
+La pantalla inicial ofrece tres opciones: **Jugar libre**, **Mundos** y **Aventura**.
 
 ### Jugar libre
 
@@ -11,27 +11,51 @@ La pantalla inicial ofrece dos modos: **jugar libre** y **retos**.
 - Al tocar una fruta, la voz cuenta de 1 a N.
 - Llegar a 10 tiene celebración. Con el marco vacío, ➖ responde con una frase amable. Nunca hay errores ni puntuaciones.
 
-### Retos
+### Mundos y Aventura
 
-La app propone y la niña responde. Los retos se alternan al azar y nunca se repite el anterior:
+Los retos se organizan en **4 mundos**, uno por fruta, con **10 niveles** cada uno y dificultad creciente:
 
-- **"¿Cuántas hay?"**: el marco muestra entre 1 y 10 frutas y la niña elige el número entre 3 opciones. Las opciones incorrectas están a 3 o menos de la respuesta.
+| Mundo      | Números | Temática |
+| ---------- | ------- | -------- |
+| 🍎 Manzana | 1–3     | huerto   |
+| 🍌 Plátano | 1–5     | selva    |
+| 🍓 Fresa   | 1–7     | jardín   |
+| 🍊 Naranja | 1–10    | naranjal |
+
+- **Mapa de niveles:** cada mundo tiene un camino de 10 nodos.
+  - El siguiente nivel aparece iluminado y los posteriores, bloqueados.
+  - Al acertar se vuelve al mapa con el nodo completado.
+  - Los niveles completados se pueden repetir sin cambiar el progreso.
+- **Mundos:** desde el selector se abre cualquier mundo. Todos están abiertos.
+- **Aventura:** los mundos se juegan en orden.
+  - Al completar uno, el siguiente se desbloquea y se abre solo.
+  - Al terminar la naranja, se celebra la aventura completa.
+- Completar un mundo o la aventura tiene una celebración especial con audio propio.
+
+Cada nivel es un reto:
+
+- **"¿Cuántas hay?"**: el marco muestra entre 1 y el máximo del mundo frutas, y la niña elige el número entre 3 opciones. Las opciones incorrectas están a 3 o menos de la respuesta; en el mundo manzana siempre son 1, 2 y 3.
   Bajo cada número hay un altavoz que dice cómo se llama ("seis"). Escucharlo no cuenta como respuesta: sirve para oír las opciones antes de elegir.
 - **"Pon N frutas"**: la voz pide un número y la niña construye la cantidad con ➕/➖ y confirma con ✓.
-- Al acertar hay celebración, "¡Muy bien!" y, tras `SUCCESS_PAUSE_MS` (2 s, en `src/state/challengeSession.svelte.ts`), el siguiente reto.
+- Al acertar hay celebración, "¡Muy bien!" y, tras `SUCCESS_PAUSE_MS` (2 s, en `src/state/challengeSession.svelte.ts`), se vuelve al mapa.
 - Si la respuesta no es correcta no hay error: la voz dice "¡Vamos a contarlas!", cuenta las frutas resaltándolas y repite la pregunta.
-- El botón del altavoz repite la pregunta.
+- El botón del altavoz grande repite la pregunta.
+
+**Progreso:** se guarda en el iPad (`localStorage`, clave `contar-frutas:progress:v1`) y funciona sin conexión. Si el almacenamiento no está disponible o tiene datos inválidos, la app empieza sin progreso, sin errores.
+
+> iPadOS puede borrar los datos de una PWA que lleva semanas sin abrirse. En ese caso se pierde el progreso de los mundos y la app sigue funcionando desde cero.
 
 ### Controles del adulto
 
-Están en la esquina superior derecha, son discretos y funcionan en los dos modos:
+Están en la esquina superior derecha y son discretos:
 
-- volver al inicio;
-- silenciar la voz;
-- elegir la fruta.
+- **Volver al inicio**: en todas las pantallas.
+- **Silenciar la voz**: en todas las pantallas.
+- **Elegir la fruta**: solo en el juego libre; en los mundos la fruta es la del mundo.
+- **Reiniciar el progreso** (↺): en "Mundos" y "Aventura". Pide confirmación con texto.
 
 Stack: Svelte 5 · Vite · TypeScript · vite-plugin-pwa · Vitest · Playwright (WebKit).
-Especificación: `openspec/specs/` (capacidades vigentes) y `openspec/changes/` (cambios en curso y archivados; Linear INN-12, INN-13).
+Especificación: `openspec/specs/` (capacidades vigentes) y `openspec/changes/` (cambios en curso y archivados; Linear INN-12 a INN-15).
 
 ## Desarrollo
 
@@ -57,15 +81,17 @@ Ten en cuenta que el service worker solo funciona con HTTPS o en `localhost`.
 
 Los audios viven en `public/audio/es/` con nombres fijos:
 
-| Archivo            | Qué dice                                                                                      |
-| ------------------ | --------------------------------------------------------------------------------------------- |
-| `0.m4a` … `10.m4a` | El número ("cero" … "diez")                                                                   |
-| `full.m4a`         | La frase al llenar el marco (p. ej. "¡Está lleno! ¡Muy bien!"); suena justo después de "diez" |
-| `empty.m4a`        | La frase amable al tocar ➖ sin frutas (p. ej. "No quedan frutas")                            |
-| `howMany.m4a`      | La pregunta del reto "¿Cuántas frutas hay?"                                                   |
-| `put.m4a`          | "Pon", que suena justo antes del número en el reto "Pon N frutas"                             |
-| `wellDone.m4a`     | "¡Muy bien!" al acertar un reto                                                               |
-| `letsCount.m4a`    | "¡Vamos a contarlas!" antes de contar juntos                                                  |
+| Archivo             | Qué dice                                                                                      |
+| ------------------- | --------------------------------------------------------------------------------------------- |
+| `0.m4a` … `10.m4a`  | El número ("cero" … "diez")                                                                   |
+| `full.m4a`          | La frase al llenar el marco (p. ej. "¡Está lleno! ¡Muy bien!"); suena justo después de "diez" |
+| `empty.m4a`         | La frase amable al tocar ➖ sin frutas (p. ej. "No quedan frutas")                            |
+| `howMany.m4a`       | La pregunta del reto "¿Cuántas frutas hay?"                                                   |
+| `put.m4a`           | "Pon", que suena justo antes del número en el reto "Pon N frutas"                             |
+| `wellDone.m4a`      | "¡Muy bien!" al acertar un reto                                                               |
+| `letsCount.m4a`     | "¡Vamos a contarlas!" antes de contar juntos                                                  |
+| `worldDone.m4a`     | "¡Completaste el mundo!" al completar los 10 niveles de un mundo                              |
+| `adventureDone.m4a` | "¡Completaste la aventura!" al terminar el último mundo de la aventura                        |
 
 1. Graba cada frase (por ejemplo, con Notas de voz del iPhone), con poco silencio al principio y al final.
 2. Expórtala o conviértela a AAC `.m4a`. En macOS: `afconvert -f m4af -d aac -b 64000 grabacion.wav public/audio/es/3.m4a`.

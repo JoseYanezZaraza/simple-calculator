@@ -81,3 +81,31 @@ describe('isCorrect', () => {
     expect(isCorrect(put, 0)).toBe(false)
   })
 })
+
+describe('rango del mundo (max)', () => {
+  it.each([3, 5, 7, 10])('con max=%i todos los objetivos y opciones están en 1..max', (max) => {
+    const random = seededRandom(max)
+    let previous: Challenge | null = null
+    const targets = new Set<number>()
+    for (let i = 0; i < 500; i++) {
+      const c: Challenge = nextChallenge(previous, random, max)
+      targets.add(c.target)
+      expect(c.target).toBeGreaterThanOrEqual(1)
+      expect(c.target).toBeLessThanOrEqual(max)
+      if (c.kind === 'howMany') {
+        expect(new Set(c.options).size).toBe(3)
+        for (const o of c.options) expect(o).toBeLessThanOrEqual(max)
+      }
+      expect(sameChallenge(previous, c)).toBe(false)
+      previous = c
+    }
+    expect(targets.size).toBe(max)
+  })
+
+  it('con max=3 las opciones son siempre 1, 2 y 3', () => {
+    const random = seededRandom(9)
+    for (const target of [1, 2, 3]) {
+      expect([...howManyOptions(target, random, 3)].sort()).toEqual([1, 2, 3])
+    }
+  })
+})

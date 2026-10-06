@@ -1,27 +1,35 @@
 <script lang="ts">
   import { AudioService } from './audio/audioService'
-  import ChallengeScene from './components/ChallengeScene.svelte'
   import PlayScene from './components/PlayScene.svelte'
   import StartScreen from './components/StartScreen.svelte'
+  import WorldsRoot from './components/worlds/WorldsRoot.svelte'
   import type { Challenge } from './core/challenges'
-  import { ChallengeSession } from './state/challengeSession.svelte'
+  import type { Progress } from './core/worlds'
   import { Preferences } from './state/preferences.svelte'
+  import { ProgressStore } from './state/progress.svelte'
   import { Session } from './state/session.svelte'
+  import { WorldsController, type WorldsOrigin } from './state/worldsController.svelte'
 
-  type Mode = 'home' | 'free' | 'challenges'
+  type Mode = 'home' | 'free' | 'worlds'
 
   const audio = new AudioService()
   const preferences = new Preferences(audio)
+  const progress = new ProgressStore()
   let mode = $state<Mode>('home')
   let session = $state.raw<Session | undefined>()
-  let game = $state.raw<ChallengeSession | undefined>()
+  let worlds = $state.raw<WorldsController | undefined>()
 
   if (import.meta.env.MODE === 'e2e') {
     Object.assign(window, {
       __audioLog: audio.log,
       __audio: audio,
-      // Fuerza el reto actual para escenarios deterministas.
-      __challenges: { set: (challenge: Challenge) => game?.set(challenge) },
+      // Fuerza el reto del nivel en curso para escenarios deterministas.
+      __challenges: { set: (challenge: Challenge) => worlds?.game?.set(challenge) },
+      // Siembra o lee el progreso guardado.
+      __progress: {
+        set: (p: Progress) => progress.set(p),
+        get: () => ({ ...progress.progress }),
+      },
     })
   }
 
@@ -32,24 +40,18 @@
     mode = 'free'
   }
 
-  function enterChallenges() {
-    const loaded = audio.unlock()
-    const current = new ChallengeSession(audio, preferences)
-    current.start(false)
-    game = current
-    mode = 'challenges'
-    // La primera pregunta suena cuando los audios están decodificados.
-    void loaded.then(() => {
-      if (game === current) current.ask()
-    })
+  function enterWorlds(origin: WorldsOrigin) {
+    const audioReady = audio.unlock()
+    worlds = new WorldsController(audio, preferences, progress, origin, { audioReady })
+    mode = 'worlds'
   }
 
   function goHome() {
     session?.narrator.cancel()
-    game?.stop()
+    worlds?.stop()
     audio.stop()
     session = undefined
-    game = undefined
+    worlds = undefined
     mode = 'home'
   }
 
@@ -63,8 +65,12 @@
 
 {#if mode === 'free' && session}
   <PlayScene {session} onhome={goHome} />
-{:else if mode === 'challenges' && game}
-  <ChallengeScene {game} onhome={goHome} />
+{:else if mode === 'worlds' && worlds}
+  <WorldsRoot controller={worlds} onhome={goHome} />
 {:else}
-  <StartScreen onfree={enterFree} onchallenges={enterChallenges} />
+  <StartScreen
+    onfree={enterFree}
+    onworlds={() => enterWorlds('worlds')}
+    onadventure={() => enterWorlds('adventure')}
+  />
 {/if}

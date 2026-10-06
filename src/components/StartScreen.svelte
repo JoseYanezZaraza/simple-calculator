@@ -1,7 +1,12 @@
 <script lang="ts">
-  import apple from '../assets/fruits/apple.svg'
+  import { FRUIT_IMAGES } from '../assets/fruits'
+  import { WORLD_IDS } from '../core/worlds'
 
-  let { onfree, onchallenges }: { onfree: () => void; onchallenges: () => void } = $props()
+  let {
+    onfree,
+    onworlds,
+    onadventure,
+  }: { onfree: () => void; onworlds: () => void; onadventure: () => void } = $props()
 
   /** Mini marco de diez del botón "jugar libre": 3 manzanas. */
   const miniFrame = Array.from({ length: 10 }, (_, i) => i < 3)
@@ -13,7 +18,7 @@
       <span class="mini-frame" aria-hidden="true">
         {#each miniFrame as filled, i (i)}
           <span class="mini-slot">
-            {#if filled}<img src={apple} alt="" />{/if}
+            {#if filled}<img src={FRUIT_IMAGES.apple} alt="" />{/if}
           </span>
         {/each}
       </span>
@@ -22,16 +27,30 @@
   </div>
 
   <div class="choice">
-    <button
-      class="mode challenges"
-      data-testid="start-challenges"
-      aria-label="Retos"
-      onclick={onchallenges}
-    >
-      <span class="question" aria-hidden="true">?</span>
-      <img class="badge" src={apple} alt="" />
+    <button class="mode worlds" data-testid="start-worlds" aria-label="Mundos" onclick={onworlds}>
+      <span class="fruit-grid" aria-hidden="true">
+        {#each WORLD_IDS as world (world)}
+          <img src={FRUIT_IMAGES[world]} alt="" />
+        {/each}
+      </span>
     </button>
-    <p class="label" aria-hidden="true">Retos</p>
+    <p class="label" aria-hidden="true">Mundos</p>
+  </div>
+
+  <div class="choice">
+    <button
+      class="mode adventure"
+      data-testid="start-adventure"
+      aria-label="Aventura"
+      onclick={onadventure}
+    >
+      <span class="trail" aria-hidden="true">
+        {#each WORLD_IDS as world (world)}
+          <img src={FRUIT_IMAGES[world]} alt="" />
+        {/each}
+      </span>
+    </button>
+    <p class="label" aria-hidden="true">Aventura</p>
   </div>
 </main>
 
@@ -56,7 +75,7 @@
     position: relative;
     display: grid;
     place-items: center;
-    width: clamp(200px, 34vmin, 300px);
+    width: clamp(160px, 24vmin, 250px);
     aspect-ratio: 1;
     border-radius: 50%;
   }
@@ -83,13 +102,57 @@
     box-shadow: 0 12px 0 var(--plus-dark);
   }
 
-  .challenges {
+  .worlds {
     background: var(--confirm);
     box-shadow: 0 12px 0 var(--confirm-dark);
   }
 
-  .challenges::before {
-    animation-delay: 1.2s;
+  .adventure {
+    background: var(--minus);
+    box-shadow: 0 12px 0 var(--minus-dark);
+  }
+
+  .worlds::before {
+    animation-delay: 0.8s;
+  }
+
+  .adventure::before {
+    animation-delay: 1.6s;
+  }
+
+  .fruit-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6%;
+    width: 56%;
+  }
+
+  .fruit-grid img,
+  .trail img {
+    width: 100%;
+  }
+
+  /* Las frutas suben en escalera: un camino de un mundo al siguiente. */
+  .trail {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    align-items: end;
+    gap: 2%;
+    width: 72%;
+    height: 46%;
+  }
+
+  .trail img:nth-child(1) {
+    translate: 0 30%;
+  }
+  .trail img:nth-child(2) {
+    translate: 0 10%;
+  }
+  .trail img:nth-child(3) {
+    translate: 0 -10%;
+  }
+  .trail img:nth-child(4) {
+    translate: 0 -30%;
   }
 
   .mini-frame {
@@ -112,21 +175,6 @@
     width: 100%;
     height: 100%;
     padding: 8%;
-  }
-
-  .question {
-    color: #fff;
-    font-size: clamp(7rem, 20vmin, 11rem);
-    font-weight: 900;
-    line-height: 1;
-  }
-
-  .badge {
-    position: absolute;
-    width: 34%;
-    top: -10%;
-    right: -6%;
-    transform: rotate(14deg);
   }
 
   .label {

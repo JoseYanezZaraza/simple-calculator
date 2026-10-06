@@ -16,24 +16,31 @@ export function sameChallenge(a: Challenge | null, b: Challenge): boolean {
   return a !== null && a.kind === b.kind && a.target === b.target
 }
 
-/** Dos opciones incorrectas distintas a ±DISTRACTOR_SPREAD de `target`, barajadas con ella. */
-export function howManyOptions(target: number, random: Random): number[] {
+/**
+ * Dos opciones incorrectas distintas a ±DISTRACTOR_SPREAD de `target` y dentro de [1, max],
+ * barajadas con ella. Con max = 3 las opciones son siempre 1, 2 y 3.
+ */
+export function howManyOptions(target: number, random: Random, max: number = MAX_TARGET): number[] {
   const candidates: number[] = []
   for (let n = target - DISTRACTOR_SPREAD; n <= target + DISTRACTOR_SPREAD; n++) {
-    if (n !== target && n >= MIN_TARGET && n <= MAX_TARGET) candidates.push(n)
+    if (n !== target && n >= MIN_TARGET && n <= max) candidates.push(n)
   }
   const distractors = shuffle(candidates, random).slice(0, OPTION_COUNT - 1)
   return shuffle([target, ...distractors], random)
 }
 
-/** Reto nuevo al azar (tipo 50 %, objetivo 1..10), nunca igual al anterior. */
-export function nextChallenge(previous: Challenge | null, random: Random): Challenge {
+/** Reto nuevo al azar (tipo 50 %, objetivo 1..max), nunca igual al anterior. */
+export function nextChallenge(
+  previous: Challenge | null,
+  random: Random,
+  max: number = MAX_TARGET,
+): Challenge {
   for (;;) {
     const kind: ChallengeKind = random() < 0.5 ? 'howMany' : 'put'
-    const target = randomInt(random, MIN_TARGET, MAX_TARGET)
+    const target = randomInt(random, MIN_TARGET, max)
     const challenge: Challenge =
       kind === 'howMany'
-        ? { kind, target, options: howManyOptions(target, random) }
+        ? { kind, target, options: howManyOptions(target, random, max) }
         : { kind, target }
     if (!sameChallenge(previous, challenge)) return challenge
   }

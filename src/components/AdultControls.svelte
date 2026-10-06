@@ -2,9 +2,27 @@
   import { FRUIT_IMAGES, FRUIT_LABELS } from '../assets/fruits'
   import { FRUITS, type Fruit, type Preferences } from '../state/preferences.svelte'
 
-  let { preferences, onhome }: { preferences: Preferences; onhome: () => void } = $props()
+  let {
+    preferences,
+    onhome,
+    showFruitPicker = true,
+    onreset,
+  }: {
+    preferences: Preferences
+    onhome: () => void
+    /** En los mundos la fruta es la del mundo: no se muestra el selector. */
+    showFruitPicker?: boolean
+    /** Si se pasa, aparece "reiniciar progreso" con confirmación. */
+    onreset?: () => void
+  } = $props()
 
   let pickerOpen = $state(false)
+  let confirmingReset = $state(false)
+
+  function confirmReset() {
+    confirmingReset = false
+    onreset?.()
+  }
 
   function choose(option: Fruit) {
     preferences.setFruit(option)
@@ -50,36 +68,79 @@
     </svg>
   </button>
 
-  <div class="picker">
+  {#if showFruitPicker}
+    <div class="picker">
+      <button
+        class="control"
+        data-testid="fruit-picker"
+        aria-haspopup="menu"
+        aria-expanded={pickerOpen}
+        aria-label="Elegir fruta (ahora: {FRUIT_LABELS[preferences.fruit]})"
+        onclick={() => (pickerOpen = !pickerOpen)}
+      >
+        <img src={FRUIT_IMAGES[preferences.fruit]} alt="" />
+      </button>
+      {#if pickerOpen}
+        <div class="menu" role="menu">
+          {#each FRUITS as option (option)}
+            <button
+              class="control option"
+              class:current={option === preferences.fruit}
+              role="menuitemradio"
+              aria-checked={option === preferences.fruit}
+              aria-label={FRUIT_LABELS[option]}
+              data-fruit-option={option}
+              onclick={() => choose(option)}
+            >
+              <img src={FRUIT_IMAGES[option]} alt="" />
+            </button>
+          {/each}
+        </div>
+      {/if}
+    </div>
+  {/if}
+
+  {#if onreset}
     <button
       class="control"
-      data-testid="fruit-picker"
-      aria-haspopup="menu"
-      aria-expanded={pickerOpen}
-      aria-label="Elegir fruta (ahora: {FRUIT_LABELS[preferences.fruit]})"
-      onclick={() => (pickerOpen = !pickerOpen)}
+      data-testid="reset-progress"
+      aria-label="Reiniciar el progreso"
+      onclick={() => (confirmingReset = true)}
     >
-      <img src={FRUIT_IMAGES[preferences.fruit]} alt="" />
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4.5h4.5"
+          stroke="currentColor"
+          stroke-width="2.4"
+          fill="none"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
     </button>
-    {#if pickerOpen}
-      <div class="menu" role="menu">
-        {#each FRUITS as option (option)}
-          <button
-            class="control option"
-            class:current={option === preferences.fruit}
-            role="menuitemradio"
-            aria-checked={option === preferences.fruit}
-            aria-label={FRUIT_LABELS[option]}
-            data-fruit-option={option}
-            onclick={() => choose(option)}
-          >
-            <img src={FRUIT_IMAGES[option]} alt="" />
-          </button>
-        {/each}
-      </div>
-    {/if}
-  </div>
+  {/if}
 </nav>
+
+{#if confirmingReset}
+  <!-- Texto para el adulto: la niña no lee, así que no puede confirmarlo sin querer. -->
+  <div class="backdrop">
+    <div class="dialog" role="alertdialog" aria-modal="true" aria-labelledby="reset-title">
+      <p id="reset-title">¿Borrar todo el progreso de los mundos?</p>
+      <div class="dialog-actions">
+        <button
+          class="dialog-button"
+          data-testid="reset-cancel"
+          onclick={() => (confirmingReset = false)}
+        >
+          Cancelar
+        </button>
+        <button class="dialog-button danger" data-testid="reset-confirm" onclick={confirmReset}>
+          Borrar
+        </button>
+      </div>
+    </div>
+  </div>
+{/if}
 
 <style>
   .adult {
@@ -125,6 +186,49 @@
   .option {
     opacity: 1;
     background: none;
+  }
+
+  .backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    display: grid;
+    place-items: center;
+    background: rgb(0 0 0 / 0.35);
+  }
+
+  .dialog {
+    max-width: min(90vw, 460px);
+    padding: 28px;
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: 0 12px 36px rgb(0 0 0 / 0.25);
+    font-size: 1.3rem;
+    text-align: center;
+  }
+
+  .dialog p {
+    margin: 0 0 24px;
+  }
+
+  .dialog-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+  }
+
+  .dialog-button {
+    min-width: 140px;
+    padding: 14px 20px;
+    border-radius: 12px;
+    background: rgb(61 44 30 / 0.1);
+    font-size: 1.2rem;
+    font-weight: 700;
+  }
+
+  .dialog-button.danger {
+    color: #fff;
+    background: #c62828;
   }
 
   .option.current {

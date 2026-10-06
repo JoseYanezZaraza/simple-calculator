@@ -7,11 +7,16 @@ import { Preferences } from './preferences.svelte'
 
 let audio: FakeAudio
 let game: ChallengeSession
+let solved: ReturnType<typeof vi.fn<() => void>>
 
 beforeEach(() => {
   vi.useFakeTimers()
   audio = new FakeAudio()
-  game = new ChallengeSession(audio, new Preferences(audio), seededRandom(1))
+  solved = vi.fn<() => void>()
+  game = new ChallengeSession(audio, new Preferences(audio), {
+    random: seededRandom(1),
+    onSolved: solved,
+  })
 })
 
 afterEach(() => {
@@ -35,15 +40,16 @@ describe('¿Cuántas hay?', () => {
     expect(audio.played).toEqual([['howMany']])
   })
 
-  it('al acertar celebra, dice "¡Muy bien!" y pasa a otro reto (CA3)', () => {
+  it('al acertar celebra, dice "¡Muy bien!" y tras la pausa avisa con onSolved', () => {
     howMany(3, [2, 3, 5])
     game.choose(3)
     expect(game.phase).toBe('celebrating')
     expect(game.celebration).toBe(1)
     expect(audio.played).toEqual([['wellDone']])
-    vi.advanceTimersByTime(SUCCESS_PAUSE_MS)
-    expect(game.phase).toBe('asking')
-    expect(game.challenge).not.toEqual({ kind: 'howMany', target: 3, options: [2, 3, 5] })
+    vi.advanceTimersByTime(SUCCESS_PAUSE_MS - 1)
+    expect(solved).not.toHaveBeenCalled()
+    vi.advanceTimersByTime(1)
+    expect(solved).toHaveBeenCalledOnce()
   })
 
   it('al fallar cuenta juntos y repite la pregunta en el mismo reto (CA4)', () => {
@@ -165,14 +171,18 @@ describe('transición y controles', () => {
     expect(audio.played).toEqual([['put', '9']])
   })
 
-  it('nunca repite el reto anterior al avanzar (CA7)', () => {
-    let previous = game.challenge
+  it('start nunca repite el reto anterior y respeta el rango del mundo', () => {
+    const g = new ChallengeSession(audio, new Preferences(audio), {
+      max: 3,
+      random: seededRandom(5),
+    })
+    let previous = null as typeof g.challenge | null
     for (let i = 0; i < 200; i++) {
-      game.next()
-      expect(
-        game.challenge.kind === previous.kind && game.challenge.target === previous.target,
-      ).toBe(false)
-      previous = game.challenge
+      g.start(previous, false)
+      const c = g.challenge
+      expect(c.target).toBeLessThanOrEqual(3)
+      if (previous) expect(c.kind === previous.kind && c.target === previous.target).toBe(false)
+      previous = c
     }
   })
 
@@ -181,7 +191,7 @@ describe('transición y controles', () => {
     game.choose(3)
     game.stop()
     vi.advanceTimersByTime(SUCCESS_PAUSE_MS * 2)
-    expect(game.phase).toBe('celebrating')
+    expect(solved).not.toHaveBeenCalled()
     expect(audio.stops).toBe(1)
   })
 
@@ -195,15 +205,15 @@ describe('transición y controles', () => {
     game.choose(3)
     expect(game.celebration).toBe(1)
     vi.advanceTimersByTime(SUCCESS_PAUSE_MS)
-    expect(game.phase).toBe('asking')
+    expect(solved).toHaveBeenCalledOnce()
     expect(audio.played).toEqual([])
   })
 
-  it('usa la fruta elegida por el adulto (CA10)', () => {
+  it('usa la fruta del mundo, no la elegida por el adulto', () => {
     const prefs = new Preferences(audio)
     prefs.setFruit('strawberry')
-    const g = new ChallengeSession(audio, prefs, seededRandom(2))
-    expect(g.frame.fruit).toBe('strawberry')
+    const g = new ChallengeSession(audio, prefs, { fruit: 'orange' })
+    expect(g.frame.fruit).toBe('orange')
   })
 })
 

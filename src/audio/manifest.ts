@@ -5,7 +5,8 @@ import { MAX_COUNT } from '../core/tenFrame'
  * reemplazar los archivos de public/audio/es/ manteniendo estos nombres.
  */
 export type NumberClip = `${number}`
-export type PhraseClip = 'full' | 'empty' | 'howMany' | 'put' | 'wellDone' | 'letsCount'
+export type PhraseClip =
+  'full' | 'empty' | 'howMany' | 'put' | 'wellDone' | 'letsCount' | 'worldDone' | 'adventureDone'
 export type ClipId = NumberClip | PhraseClip
 
 export const NUMBER_CLIPS: NumberClip[] = Array.from(
@@ -19,6 +20,8 @@ export const PHRASE_CLIPS: PhraseClip[] = [
   'put',
   'wellDone',
   'letsCount',
+  'worldDone',
+  'adventureDone',
 ]
 export const ALL_CLIPS: ClipId[] = [...NUMBER_CLIPS, ...PHRASE_CLIPS]
 

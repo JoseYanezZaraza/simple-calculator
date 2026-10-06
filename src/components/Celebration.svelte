@@ -25,7 +25,7 @@
       class="celebration"
       data-testid="celebration"
       aria-hidden="true"
-      {@attach recordCelebration}
+      {@attach () => recordCelebration('level')}
     >
       <span class="star">⭐</span>
       {#each { length: PIECES }, i (i)}
