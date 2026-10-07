@@ -50,5 +50,5 @@
 - [x] 6.9 Verificar **CA9**: el progreso sobrevive a una recarga y el almacenamiento corrupto o bloqueado no da errores (e2e + unit)
 - [x] 6.10 Verificar **CA10**: el reinicio funciona al confirmar y no cambia nada al cancelar (e2e + unit)
 - [x] 6.11 Verificar **CA11**: "inicio" funciona desde todas las pantallas nuevas y la voz silenciada se respeta (e2e)
-- [ ] 6.12 Verificar **CA12**: los mundos funcionan sin conexión (e2e Chromium + prueba manual en iPad en modo avión)
-- [ ] 6.13 Cumplir la **Definition of Done** de design.md
+- [x] 6.12 Verificar **CA12**: los mundos funcionan sin conexión (e2e Chromium + prueba manual en iPad en modo avión OK, verificada por el usuario el 2026-10-07)
+- [x] 6.13 Cumplir la **Definition of Done** de design.md

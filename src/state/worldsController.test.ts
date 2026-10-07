@@ -3,6 +3,7 @@ import { seededRandom } from '../core/random'
 import { emptyProgress, type Progress, type WorldId } from '../core/worlds'
 import { FakeAudio } from '../test/fakeAudio'
 import { SUCCESS_PAUSE_MS } from './challengeSession.svelte'
+import { AvatarStore } from './avatar.svelte'
 import { Preferences } from './preferences.svelte'
 import { ProgressStore } from './progress.svelte'
 import {
@@ -25,9 +26,20 @@ afterEach(() => {
   vi.useRealTimers()
 })
 
-function controller(origin: WorldsOrigin, progress: Partial<Progress> = {}) {
+function avatarStore(avatar: 'apple' | 'banana' | null = 'apple') {
+  const a = new AvatarStore(null)
+  if (avatar) a.set(avatar)
+  return a
+}
+
+function controller(
+  origin: WorldsOrigin,
+  progress: Partial<Progress> = {},
+  avatar = avatarStore(),
+) {
   store.set({ ...emptyProgress(), ...progress })
   return new WorldsController(audio, new Preferences(audio), store, origin, {
+    avatar,
     random: seededRandom(3),
   })
 }
@@ -80,7 +92,7 @@ describe('Mundos (libre)', () => {
     const c = controller('worlds', { apple: 2 })
     await playAndSolve(c, 'apple', 3)
     expect(store.progress.apple).toBe(3)
-    expect(c.screen).toEqual({ name: 'levels', world: 'apple' })
+    expect(c.screen).toEqual({ name: 'levels', world: 'apple', hopFrom: 3 })
   })
 
   it('repetir un nivel completado no cambia el progreso (CA5)', async () => {
@@ -136,7 +148,7 @@ describe('Aventura (lineal)', () => {
     const c = controller('adventure', { apple: 9 })
     await playAndSolve(c, 'apple', 10)
     vi.advanceTimersByTime(WORLD_CELEBRATION_MS)
-    expect(c.screen).toEqual({ name: 'adventure', unlocking: 'banana' })
+    expect(c.screen).toEqual({ name: 'adventure', unlocking: 'banana', hopFrom: 'apple' })
     vi.advanceTimersByTime(UNLOCK_PAUSE_MS)
     expect(c.screen).toEqual({ name: 'levels', world: 'banana' })
   })
@@ -171,10 +183,70 @@ describe('inicio y voz (CA11)', () => {
     const prefs = new Preferences(audio)
     prefs.setVoice(false)
     store.set({ ...emptyProgress(), apple: 9 })
-    const c = new WorldsController(audio, prefs, store, 'adventure', { random: seededRandom(1) })
+    const c = new WorldsController(audio, prefs, store, 'adventure', {
+      avatar: avatarStore(),
+      random: seededRandom(1),
+    })
     await playAndSolve(c, 'apple', 10)
     vi.advanceTimersByTime(WORLD_CELEBRATION_MS + UNLOCK_PAUSE_MS)
     expect(c.screen).toEqual({ name: 'levels', world: 'banana' })
     expect(audio.played).toEqual([])
+  })
+})
+
+describe('avatar', () => {
+  it('sin avatar la primera pantalla es la elección, con la pregunta (CA1)', async () => {
+    const c = controller('worlds', {}, avatarStore(null))
+    expect(c.screen).toEqual({ name: 'avatarPicker', then: 'worlds' })
+    await Promise.resolve()
+    expect(audio.played).toEqual([['chooseAvatar']])
+    c.chooseAvatar('strawberry')
+    expect(c.avatar.avatar).toBe('strawberry')
+    expect(c.screen).toEqual({ name: 'worlds' })
+  })
+
+  it('desde "Aventura" vuelve al camino tras elegir (CA1)', () => {
+    const c = controller('adventure', {}, avatarStore(null))
+    c.chooseAvatar('banana')
+    expect(c.screen).toEqual({ name: 'adventure' })
+  })
+
+  it('con avatar guardado no aparece la elección (CA2)', () => {
+    expect(controller('worlds').screen).toEqual({ name: 'worlds' })
+  })
+
+  it('se puede cambiar desde el selector y la aventura (CA3)', () => {
+    const c = controller('adventure')
+    c.openAvatarPicker()
+    expect(c.screen).toEqual({ name: 'avatarPicker', then: 'adventure' })
+    c.chooseAvatar('banana')
+    expect(c.avatar.avatar).toBe('banana')
+    expect(c.screen).toEqual({ name: 'adventure' })
+  })
+
+  it('no se abre la elección desde el mapa ni desde un reto', () => {
+    const c = controller('worlds')
+    c.openWorld('apple')
+    c.openAvatarPicker()
+    expect(c.screen).toEqual({ name: 'levels', world: 'apple' })
+  })
+
+  it('repetir un nivel completado no hace saltar al avatar (CA5)', async () => {
+    const c = controller('worlds', { apple: 5 })
+    await playAndSolve(c, 'apple', 2)
+    expect(c.screen).toEqual({ name: 'levels', world: 'apple' })
+  })
+
+  it('volver a abrir el mapa no repite el salto (CA5)', async () => {
+    const c = controller('worlds', { apple: 2 })
+    await playAndSolve(c, 'apple', 3)
+    c.openWorld('apple')
+    expect(c.screen).toEqual({ name: 'levels', world: 'apple' })
+  })
+
+  it('reiniciar el progreso no cambia el avatar (CA7)', () => {
+    const c = controller('worlds', { apple: 4 }, avatarStore('banana'))
+    c.progress.reset()
+    expect(c.avatar.avatar).toBe('banana')
   })
 })

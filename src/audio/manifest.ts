@@ -6,7 +6,15 @@ import { MAX_COUNT } from '../core/tenFrame'
  */
 export type NumberClip = `${number}`
 export type PhraseClip =
-  'full' | 'empty' | 'howMany' | 'put' | 'wellDone' | 'letsCount' | 'worldDone' | 'adventureDone'
+  | 'full'
+  | 'empty'
+  | 'howMany'
+  | 'put'
+  | 'wellDone'
+  | 'letsCount'
+  | 'worldDone'
+  | 'adventureDone'
+  | 'chooseAvatar'
 export type ClipId = NumberClip | PhraseClip
 
 export const NUMBER_CLIPS: NumberClip[] = Array.from(
@@ -22,6 +30,7 @@ export const PHRASE_CLIPS: PhraseClip[] = [
   'letsCount',
   'worldDone',
   'adventureDone',
+  'chooseAvatar',
 ]
 export const ALL_CLIPS: ClipId[] = [...NUMBER_CLIPS, ...PHRASE_CLIPS]
 

@@ -9,8 +9,9 @@ import {
   worldMax,
   type WorldId,
 } from '../core/worlds'
+import { AvatarStore } from './avatar.svelte'
 import { ChallengeSession } from './challengeSession.svelte'
-import type { Preferences } from './preferences.svelte'
+import type { Fruit, Preferences } from './preferences.svelte'
 import type { ProgressStore } from './progress.svelte'
 
 /** Duración de la celebración de mundo o de aventura antes de seguir. */
@@ -22,14 +23,19 @@ export const UNLOCK_PAUSE_MS = 2500
 export type WorldsOrigin = 'worlds' | 'adventure'
 
 export type WorldsScreen =
+  | { name: 'avatarPicker'; then: WorldsOrigin }
   | { name: 'worlds' }
-  | { name: 'adventure'; unlocking?: WorldId }
-  | { name: 'levels'; world: WorldId }
+  /** `hopFrom`: mundo completado desde el que salta el avatar al desbloqueado. */
+  | { name: 'adventure'; unlocking?: WorldId; hopFrom?: WorldId }
+  /** `hopFrom`: nivel recién completado desde el que salta el avatar al siguiente. */
+  | { name: 'levels'; world: WorldId; hopFrom?: number }
   | { name: 'challenge'; world: WorldId; level: number }
   | { name: 'worldComplete'; world: WorldId }
   | { name: 'adventureComplete' }
 
 export interface WorldsControllerOptions {
+  /** Avatar elegido; sin él, la primera pantalla es "¿Quién te acompaña?". */
+  avatar?: AvatarStore
   random?: Random
   /** Se resuelve cuando los audios están cargados; la primera pregunta espera a ello. */
   audioReady?: Promise<unknown>
@@ -47,17 +53,49 @@ export class WorldsController {
   private timer: ReturnType<typeof setTimeout> | undefined
   private readonly random: Random
   private readonly audioReady: Promise<unknown>
+  readonly avatar: AvatarStore
 
   constructor(
     private readonly audio: AudioPort,
     readonly preferences: Preferences,
     readonly progress: ProgressStore,
     readonly origin: WorldsOrigin,
-    { random = Math.random, audioReady = Promise.resolve() }: WorldsControllerOptions = {},
+    {
+      avatar = new AvatarStore(null),
+      random = Math.random,
+      audioReady = Promise.resolve(),
+    }: WorldsControllerOptions = {},
   ) {
     this.random = random
     this.audioReady = audioReady
-    this.screen = origin === 'worlds' ? { name: 'worlds' } : { name: 'adventure' }
+    this.avatar = avatar
+    if (avatar.avatar === null) {
+      this.showAvatarPicker(origin)
+    } else {
+      this.screen = origin === 'worlds' ? { name: 'worlds' } : { name: 'adventure' }
+    }
+  }
+
+  /** Desde el selector o el camino: cambiar de avatar. */
+  openAvatarPicker(): void {
+    const s = this.screen
+    if (s.name !== 'worlds' && s.name !== 'adventure') return
+    this.clearTimer()
+    this.showAvatarPicker(s.name)
+  }
+
+  chooseAvatar(fruit: Fruit): void {
+    const s = this.screen
+    if (s.name !== 'avatarPicker') return
+    this.avatar.set(fruit)
+    this.screen = s.then === 'worlds' ? { name: 'worlds' } : { name: 'adventure' }
+  }
+
+  private showAvatarPicker(then: WorldsOrigin): void {
+    this.screen = { name: 'avatarPicker', then }
+    void this.audioReady.then(() => {
+      if (this.screen.name === 'avatarPicker') this.audio.play('chooseAvatar')
+    })
   }
 
   /** Mundo cuya temática se muestra, o null en el selector y el camino. */
@@ -104,9 +142,10 @@ export class WorldsController {
 
   private levelSolved(world: WorldId, level: number): void {
     this.game = undefined
-    const { worldCompleted } = this.progress.complete(world, level)
+    const { advanced, worldCompleted } = this.progress.complete(world, level)
     if (!worldCompleted) {
-      this.screen = { name: 'levels', world }
+      // El avatar salta solo si se avanzó; repetir un nivel completado no lo mueve.
+      this.screen = advanced ? { name: 'levels', world, hopFrom: level } : { name: 'levels', world }
       return
     }
     this.screen = { name: 'worldComplete', world }
@@ -130,7 +169,7 @@ export class WorldsController {
       }
       return
     }
-    this.screen = { name: 'adventure', unlocking: next }
+    this.screen = { name: 'adventure', unlocking: next, hopFrom: world }
     this.timer = setTimeout(() => this.openWorld(next), UNLOCK_PAUSE_MS)
   }
 

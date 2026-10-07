@@ -28,8 +28,8 @@ describe('ProgressStore', () => {
   it('avisa al completar el mundo, solo una vez', () => {
     const store = new ProgressStore(new MemoryStorage())
     store.set({ ...emptyProgress(), apple: 9 })
-    expect(store.complete('apple', 10)).toEqual({ worldCompleted: true })
-    expect(store.complete('apple', 10)).toEqual({ worldCompleted: false })
+    expect(store.complete('apple', 10)).toEqual({ advanced: true, worldCompleted: true })
+    expect(store.complete('apple', 10)).toEqual({ advanced: false, worldCompleted: false })
   })
 
   it('repetir un nivel completado no escribe ni cambia nada (CA5)', () => {

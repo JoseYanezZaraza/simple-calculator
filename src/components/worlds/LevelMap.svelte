@@ -1,13 +1,24 @@
 <script lang="ts">
   import { FRUIT_IMAGES } from '../../assets/fruits'
   import { LEVELS_PER_WORLD, nodeState, type Progress, type WorldId } from '../../core/worlds'
+  import type { Fruit } from '../../state/preferences.svelte'
+  import Avatar, { type AvatarSpot } from './Avatar.svelte'
 
   /** Mapa de un mundo: 10 nodos en camino serpenteante, visibles sin scroll. */
   let {
     world,
     progress,
+    avatar,
+    hopFrom,
     onplay,
-  }: { world: WorldId; progress: Progress; onplay: (level: number) => void } = $props()
+  }: {
+    world: WorldId
+    progress: Progress
+    avatar: Fruit | null
+    /** Nivel recién completado desde el que salta el avatar. */
+    hopFrom?: number
+    onplay: (level: number) => void
+  } = $props()
 
   const levels = Array.from({ length: LEVELS_PER_WORLD }, (_, i) => i + 1)
 
@@ -23,6 +34,13 @@
     return [row % 2 === 0 ? (col === 0 ? 28 : 72) : col === 0 ? 72 : 28, 8 + 19 * row]
   }
   const points = (f: (l: number) => [number, number]) => levels.map((l) => f(l).join(',')).join(' ')
+
+  function spot(level: number): AvatarSpot {
+    return { id: String(level), landscape: landscape(level), portrait: portrait(level) }
+  }
+
+  /** El avatar está en el nivel siguiente, o en el 10 si el mundo está completo. */
+  const avatarLevel = $derived(Math.min(progress[world] + 1, LEVELS_PER_WORLD))
 </script>
 
 <div class="map" data-testid="level-map" data-world={world}>
@@ -57,6 +75,15 @@
       {/if}
     </button>
   {/each}
+  {#if avatar}
+    <Avatar
+      fruit={avatar}
+      at={spot(avatarLevel)}
+      from={hopFrom ? spot(hopFrom) : undefined}
+      size="clamp(76px, 10vmin, 100px)"
+      lift="clamp(34px, 4.6vmin, 44px)"
+    />
+  {/if}
 </div>
 
 <style>

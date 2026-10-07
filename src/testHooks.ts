@@ -24,3 +24,12 @@ export function recordOptionHighlight(option: number): void {
   const w = window as unknown as { __optionHighlightLog?: number[] }
   ;(w.__optionHighlightLog ??= []).push(option)
 }
+
+/** Cada cambio de posición del avatar (`animated` = con salto en arco). */
+export function recordHop(from: string, to: string, animated: boolean): void {
+  if (import.meta.env.MODE !== 'e2e') return
+  const w = window as unknown as {
+    __hopLog?: { from: string; to: string; animated: boolean }[]
+  }
+  ;(w.__hopLog ??= []).push({ from, to, animated })
+}
