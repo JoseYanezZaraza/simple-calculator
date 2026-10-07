@@ -1,4 +1,4 @@
-> **Linear:** [INN-15](https://linear.app/inno8/issue/INN-15/incremento-3-mapa-de-mundos-por-fruta-con-10-retos-cada-uno-mundos-y) · Proyecto [P-INN-2](https://linear.app/inno8/project/calculadora-interactiva-infantil-952da72f318f) · **Estado:** Draft
+> **Linear:** [INN-15](https://linear.app/inno8/issue/INN-15/incremento-3-mapa-de-mundos-por-fruta-con-10-retos-cada-uno-mundos-y) · Proyecto [P-INN-2](https://linear.app/inno8/project/calculadora-interactiva-infantil-952da72f318f) · **Estado:** Implementado (PR #6)
 
 ## Why
 
@@ -62,23 +62,23 @@ Los retos actuales son infinitos y al azar: la niña no ve que avanza ni tiene u
 
 ## Criterios de Aceptación
 
-- [ ] **CA1:** La pantalla inicial muestra tres botones grandes, "Jugar libre", "Mundos" y "Aventura". "Jugar libre" mantiene el comportamiento actual y cualquiera de los tres deja el audio habilitado.
-- [ ] **CA2:** "Mundos" muestra los 4 mundos en orden (manzana, plátano, fresa, naranja), cada uno con su temática y su progreso (niveles completados de 10). Todos se pueden abrir.
-- [ ] **CA3:** El mapa de niveles de un mundo muestra 10 nodos en camino:
+- [x] **CA1:** La pantalla inicial muestra tres botones grandes, "Jugar libre", "Mundos" y "Aventura". "Jugar libre" mantiene el comportamiento actual y cualquiera de los tres deja el audio habilitado.
+- [x] **CA2:** "Mundos" muestra los 4 mundos en orden (manzana, plátano, fresa, naranja), cada uno con su temática y su progreso (niveles completados de 10). Todos se pueden abrir.
+- [x] **CA3:** El mapa de niveles de un mundo muestra 10 nodos en camino:
   - los completados, marcados;
   - el siguiente, iluminado;
   - los posteriores, bloqueados.
 
   Solo se pueden jugar el siguiente y los completados. Tocar un nodo bloqueado no hace nada ni muestra errores.
-- [ ] **CA4:** Los retos de un mundo usan su rango: N y las opciones están entre 1 y el máximo del mundo (3, 5, 7 o 10). Las frutas del marco son las del mundo y la escena muestra su temática.
-- [ ] **CA5:** Al acertar un nivel se celebra y se vuelve al mapa: el nodo queda completado y el siguiente se ilumina. Repetir un nivel completado no cambia el progreso.
-- [ ] **CA6:** Al completar el nivel 10 de un mundo hay una celebración especial y suena "¡Completaste el mundo!". Desde "Mundos" se vuelve al selector, donde el mundo aparece completado.
-- [ ] **CA7:** "Aventura" muestra los 4 mundos en camino:
+- [x] **CA4:** Los retos de un mundo usan su rango: N y las opciones están entre 1 y el máximo del mundo (3, 5, 7 o 10). Las frutas del marco son las del mundo y la escena muestra su temática.
+- [x] **CA5:** Al acertar un nivel se celebra y se vuelve al mapa: el nodo queda completado y el siguiente se ilumina. Repetir un nivel completado no cambia el progreso.
+- [x] **CA6:** Al completar el nivel 10 de un mundo hay una celebración especial y suena "¡Completaste el mundo!". Desde "Mundos" se vuelve al selector, donde el mundo aparece completado.
+- [x] **CA7:** "Aventura" muestra los 4 mundos en camino:
   - solo está abierto el primer mundo sin completar (y los anteriores, ya completados);
   - los demás aparecen bloqueados;
   - al completar un mundo, el siguiente se desbloquea y su mapa se abre solo.
-- [ ] **CA8:** Al completar el último mundo en la aventura suena "¡Completaste la aventura!", hay una celebración y la aventura queda con los 4 mundos completados.
-- [ ] **CA9:** El progreso se conserva al cerrar y volver a abrir la app. Si el almacenamiento no está disponible o tiene datos inválidos, la app funciona igual, empezando sin progreso y sin mostrar errores.
-- [ ] **CA10:** Un control de adulto en "Mundos" y "Aventura" reinicia todo el progreso tras una confirmación explícita. Si se cancela, no cambia nada.
-- [ ] **CA11:** El botón "inicio" vuelve al menú desde el selector, la aventura, el mapa y los retos. La voz silenciada se respeta en todas las pantallas nuevas.
-- [ ] **CA12:** Instalada como PWA y sin conexión, los mundos funcionan con sus audios, temas y progreso guardado.
+- [x] **CA8:** Al completar el último mundo en la aventura suena "¡Completaste la aventura!", hay una celebración y la aventura queda con los 4 mundos completados.
+- [x] **CA9:** El progreso se conserva al cerrar y volver a abrir la app. Si el almacenamiento no está disponible o tiene datos inválidos, la app funciona igual, empezando sin progreso y sin mostrar errores.
+- [x] **CA10:** Un control de adulto en "Mundos" y "Aventura" reinicia todo el progreso tras una confirmación explícita. Si se cancela, no cambia nada.
+- [x] **CA11:** El botón "inicio" vuelve al menú desde el selector, la aventura, el mapa y los retos. La voz silenciada se respeta en todas las pantallas nuevas.
+- [x] **CA12:** Instalada como PWA y sin conexión, los mundos funcionan con sus audios, temas y progreso guardado.

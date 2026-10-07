@@ -82,10 +82,10 @@ En el selector y en la aventura, abajo a la izquierda: un botón redondo de 96 p
 
 ## Definition of Done (técnica)
 
-- [ ] Tests automatizados cubren cada Criterio de Aceptación del proposal (CA9 con verificación manual complementaria en iPad)
-- [ ] Los tests existentes siguen pasando
-- [ ] Lint / formato / typecheck en verde (`svelte-check`, ESLint, Prettier)
-- [ ] `openspec validate --strict` sin errores
-- [ ] Documentación actualizada: README (avatar, cambio y audio nuevo)
-- [ ] PR en GitHub enlazado al issue de Linear INN-16
-- [ ] Probado en un iPad real como PWA instalada
+- [x] Tests automatizados cubren cada Criterio de Aceptación del proposal (CA9 con verificación manual complementaria en iPad)
+- [x] Los tests existentes siguen pasando
+- [x] Lint / formato / typecheck en verde (`svelte-check`, ESLint, Prettier)
+- [x] `openspec validate --strict` sin errores
+- [x] Documentación actualizada: README (avatar, cambio y audio nuevo)
+- [x] PR en GitHub enlazado al issue de Linear INN-16
+- [x] Probado en un iPad real como PWA instalada — verificado por el usuario el 2026-10-07

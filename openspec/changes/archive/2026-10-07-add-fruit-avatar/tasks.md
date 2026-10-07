@@ -34,5 +34,5 @@
 - [x] 5.6 Verificar **CA6**: en la aventura está sobre el mundo actual y salta al desbloquear (e2e + unit)
 - [x] 5.7 Verificar **CA7**: el reinicio no cambia el avatar y lo devuelve al inicio (e2e + unit)
 - [x] 5.8 Verificar **CA8**: con movimiento reducido no hay salto animado (e2e)
-- [ ] 5.9 Verificar **CA9**: funciona sin conexión (e2e Chromium + prueba manual en iPad en modo avión)
-- [ ] 5.10 Cumplir la **Definition of Done** de design.md
+- [x] 5.9 Verificar **CA9**: funciona sin conexión (e2e Chromium + prueba manual en iPad en modo avión OK, verificada por el usuario el 2026-10-07)
+- [x] 5.10 Cumplir la **Definition of Done** de design.md

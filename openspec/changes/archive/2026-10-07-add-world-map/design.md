@@ -136,10 +136,10 @@ Un botón discreto (icono ↺) con los controles de adulto, solo en el selector 
 
 ## Definition of Done (técnica)
 
-- [ ] Tests automatizados cubren cada Criterio de Aceptación del proposal (CA12 con verificación manual complementaria en iPad)
-- [ ] Los tests existentes siguen pasando, adaptados a la entrada por mundos
-- [ ] Lint / formato / typecheck en verde (`svelte-check`, ESLint, Prettier)
-- [ ] `openspec validate --strict` sin errores
-- [ ] Documentación actualizada: README (Mundos, Aventura, progreso y reinicio, audios nuevos)
-- [ ] PR en GitHub enlazado al issue de Linear INN-15
-- [ ] Probado en un iPad real como PWA instalada (online, en modo avión y tras cerrar y reabrir)
+- [x] Tests automatizados cubren cada Criterio de Aceptación del proposal (CA12 con verificación manual complementaria en iPad)
+- [x] Los tests existentes siguen pasando, adaptados a la entrada por mundos
+- [x] Lint / formato / typecheck en verde (`svelte-check`, ESLint, Prettier)
+- [x] `openspec validate --strict` sin errores
+- [x] Documentación actualizada: README (Mundos, Aventura, progreso y reinicio, audios nuevos)
+- [x] PR en GitHub enlazado al issue de Linear INN-15
+- [x] Probado en un iPad real como PWA instalada (online, en modo avión y tras cerrar y reabrir) — verificado por el usuario el 2026-10-07

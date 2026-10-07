@@ -1,4 +1,4 @@
-> **Linear:** [INN-16](https://linear.app/inno8/issue/INN-16/avatar-fruta-cartoon-elegida-por-la-nina-que-salta-entre-niveles-y) · Proyecto [P-INN-2](https://linear.app/inno8/project/calculadora-interactiva-infantil-952da72f318f) · **Estado:** Draft · Depende de `add-world-map` (INN-15)
+> **Linear:** [INN-16](https://linear.app/inno8/issue/INN-16/avatar-fruta-cartoon-elegida-por-la-nina-que-salta-entre-niveles-y) · Proyecto [P-INN-2](https://linear.app/inno8/project/calculadora-interactiva-infantil-952da72f318f) · **Estado:** Implementado (PR #7 y PR a main) · Depende de `add-world-map` (INN-15)
 
 ## Why
 
@@ -38,12 +38,12 @@ En los mapas de niveles y en la aventura (INN-15) el progreso se ve en nodos mar
 
 ## Criterios de Aceptación
 
-- [ ] **CA1:** La primera vez que se entra en "Mundos" o "Aventura" sin avatar guardado aparece "¿Quién te acompaña?" con 4 personajes cartoon de al menos 160 px, y suena la pregunta. Al elegir uno se continúa a la pantalla pedida.
-- [ ] **CA2:** El avatar elegido se conserva al cerrar y volver a abrir la app, y la pantalla de elección no vuelve a aparecer sola. Si el almacenamiento falla, se puede elegir y jugar igual, sin errores.
-- [ ] **CA3:** Un botón en el selector de mundos y en la aventura muestra el avatar actual y abre la pantalla de elección, con el actual marcado. Elegir otro lo sustituye en todos los mapas.
-- [ ] **CA4:** En el mapa de niveles, el avatar elegido está sobre el nodo siguiente, o sobre el 10 si el mundo está completo. Tocar el nodo que tiene debajo inicia su reto.
-- [ ] **CA5:** Al volver al mapa tras completar un nivel, el avatar salta desde el nodo completado hasta el nuevo siguiente. Repetir un nivel ya completado no lo mueve.
-- [ ] **CA6:** En la aventura, el avatar está sobre el mundo actual (el primero sin completar, o el último si todo está completo). Al desbloquearse el siguiente, salta del mundo completado al nuevo antes de que se abra.
-- [ ] **CA7:** Reiniciar el progreso no cambia el avatar elegido, y este vuelve al nodo 1 o al primer mundo.
-- [ ] **CA8:** Con "reducir movimiento" activado en el sistema, el avatar cambia de posición sin animación de salto.
-- [ ] **CA9:** Instalada como PWA y sin conexión, la elección, los personajes y el salto funcionan, con el audio de la pregunta.
+- [x] **CA1:** La primera vez que se entra en "Mundos" o "Aventura" sin avatar guardado aparece "¿Quién te acompaña?" con 4 personajes cartoon de al menos 160 px, y suena la pregunta. Al elegir uno se continúa a la pantalla pedida.
+- [x] **CA2:** El avatar elegido se conserva al cerrar y volver a abrir la app, y la pantalla de elección no vuelve a aparecer sola. Si el almacenamiento falla, se puede elegir y jugar igual, sin errores.
+- [x] **CA3:** Un botón en el selector de mundos y en la aventura muestra el avatar actual y abre la pantalla de elección, con el actual marcado. Elegir otro lo sustituye en todos los mapas.
+- [x] **CA4:** En el mapa de niveles, el avatar elegido está sobre el nodo siguiente, o sobre el 10 si el mundo está completo. Tocar el nodo que tiene debajo inicia su reto.
+- [x] **CA5:** Al volver al mapa tras completar un nivel, el avatar salta desde el nodo completado hasta el nuevo siguiente. Repetir un nivel ya completado no lo mueve.
+- [x] **CA6:** En la aventura, el avatar está sobre el mundo actual (el primero sin completar, o el último si todo está completo). Al desbloquearse el siguiente, salta del mundo completado al nuevo antes de que se abra.
+- [x] **CA7:** Reiniciar el progreso no cambia el avatar elegido, y este vuelve al nodo 1 o al primer mundo.
+- [x] **CA8:** Con "reducir movimiento" activado en el sistema, el avatar cambia de posición sin animación de salto.
+- [x] **CA9:** Instalada como PWA y sin conexión, la elección, los personajes y el salto funcionan, con el audio de la pregunta.
